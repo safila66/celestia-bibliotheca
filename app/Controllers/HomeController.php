@@ -43,7 +43,7 @@ class HomeController extends BaseController
         }
     }
 
-    // ─── Katalog ─────────────────────────────────────────────
+    // ─── catalog ─────────────────────────────────────────────
     public function catalog()
     {
         $keyword  = $this->request->getGet('q');
@@ -53,7 +53,7 @@ class HomeController extends BaseController
         $books = $this->bookModel->search($keyword, $category, 12);
 
         $data = [
-            'title'      => 'Katalog Koleksi',
+            'title'      => 'catalog Koleksi',
             'books'      => $books,
             'categories' => $this->categoriesModel->findAll(),
             'keyword'    => $keyword,
@@ -66,7 +66,7 @@ class HomeController extends BaseController
     public function bookDetail($id)
     {
         $book = $this->bookModel->find($id);
-        if (! $book) return redirect()->to('/katalog')->with('error', 'Buku tidak ditemukan.');
+        if (! $book) return redirect()->to('/catalog')->with('error', 'Buku tidak ditemukan.');
 
         $userId       = session()->get('user_id');
         $isWishlisted = false;

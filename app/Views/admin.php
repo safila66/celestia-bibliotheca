@@ -34,7 +34,7 @@
           <span class="nav-icon">⊕</span> Dasbor
         </a>
         <a href="<?= base_url('admin/koleksi') ?>" class="<?= str_contains(current_url(), '/admin/koleksi') ? 'active' : '' ?>">
-          <span class="nav-icon">☉</span> Katalog Koleksi
+          <span class="nav-icon">☉</span> catalog Koleksi
         </a>
         <a href="<?= base_url('admin/koleksi/tambah') ?>" class="<?= current_url() === base_url('admin/koleksi/tambah') ? 'active' : '' ?>">
           <span class="nav-icon">✦</span> Tambah Koleksi

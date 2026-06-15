@@ -2,22 +2,22 @@
 
 <?= $this->section('styles') ?>
 <style>
-    .katalog-container {
+    .catalog-container {
         padding: 40px 56px 120px;
         position: relative;
         z-index: 10;
     }
-    .katalog-header {
+    .catalog-header {
         text-align: center;
         margin-bottom: 50px;
     }
-    .katalog-header h1 {
+    .catalog-header h1 {
         font-family: 'Cinzel', serif;
         color: var(--gold-light);
         font-size: 36px;
         margin-bottom: 10px;
     }
-    .katalog-header p {
+    .catalog-header p {
         font-family: 'EB Garamond', serif;
         font-style: italic;
         color: var(--text-dim);
@@ -114,9 +114,9 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<div class="katalog-container">
+<div class="catalog-container">
     
-    <div class="katalog-header">
+    <div class="catalog-header">
         <h1>
             <?php 
                 // Membersihkan teks title agar rapi saat dipajang sebagai h1

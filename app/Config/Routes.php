@@ -25,9 +25,10 @@ $routes->get('/logout', 'AuthController::logout');
 // ═══════════════════════════════════════════
 $routes->get('/',               'HomeController::index');
 
-// ➔ INI RUTE UNTUK CONSTELLATIONS (KATALOG)
+// ➔ INI RUTE UNTUK CONSTELLATIONS (catalog)
 $routes->get('catalog',         'CatalogController::index'); 
-$routes->get('buku/(:num)',     'HomeController::bookDetail/$1');
+// Rute untuk membuka halaman Ruang Baca (Detail Buku)
+$routes->get('book/detail/(:num)', 'BookController::detail/$1');
 
 // Halaman Statis / Publik Tambahan
 $routes->get('collections',     'HomeController::collections');

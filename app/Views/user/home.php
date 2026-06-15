@@ -21,12 +21,34 @@
     z-index: 1; /* Posisi di paling belakang */
   }
 
+  /* Overlay gelap untuk slide 1 agar teks terbaca */
+.swiper-slide:first-child .slide-bg::before {
+  content: '';
+  cursor: pointer;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  /* Gelap di kiri (area teks), transparan ke kanan */
+  background: linear-gradient(
+    to right,
+    rgba(4, 6, 15, 0.72) 0%,
+    rgba(4, 6, 15, 0.55) 40%,
+    rgba(4, 6, 15, 0.15) 70%,
+    transparent 100%
+  ),
+  /* Gelap di bawah untuk hero-cards */
+  linear-gradient(
+    to top,
+    rgba(4, 6, 15, 0.85) 0%,
+    transparent 30%
+  );
+}
   /* 1. GAMBAR UTAMA (Pastikan ukurannya full dan cerah) */
   .slide-bg {
     position: absolute; 
     inset: 0;
     background-size: cover; 
-    background-position: center top; 
+    background-position: center; 
     z-index: 1; 
     opacity: 1; /* Harus 1 agar gambarnya muncul penuh */
   }
@@ -52,13 +74,13 @@ header, nav, .navbar {
     backdrop-filter: blur(0px) !important;
     -webkit-backdrop-filter: blur(0px) !important;
     border-bottom: 1px solid rgba(201,168,76,0.12) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 8px rgba(0, 0, 0, 0.6);
   }
 
   .goddess-overlay {
-    position: absolute; right: -2%; bottom: 0;
-    width: 54%; height: 100%;
-    z-index: 2; pointer-events: none;
-    display: flex; align-items: flex-end; justify-content: center;
+    display: none !important; /* Sembunyikan default, akan diaktifkan di slide tertentu */
   }
   .goddess-overlay canvas {
     width: 100%; height: 100%;
@@ -96,29 +118,35 @@ header, nav, .navbar {
   .hero-eyebrow {
     display: flex; align-items: center; gap: 18px;
     font-family: 'Raleway', sans-serif; font-size: 11px;
-    letter-spacing: 0.22em; color: var(--gold); text-transform: uppercase;
+    letter-spacing: 0.22em; color: var(--navy); text-transform: uppercase;
     margin-bottom: 24px;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.9);
   }
   .hero-eyebrow::after {
     content: ''; display: block; width: 60px; height: 1px;
     background: var(--gold); opacity: 0.5;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.9);
   }
   .hero-title {
     font-family: 'Cinzel', serif; 
     font-size: clamp(42px, 6vw, 86px); /* Ini mengembalikan ukuran besar aslinya */
     font-weight: 400; line-height: 1.0; letter-spacing: 0.02em;
     color: var(--ivory); margin-bottom: 10px;
+     text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
   }
   .hero-title span { color: var(--gold-light); }
   .hero-subtitle {
     font-family: 'Cinzel', serif; 
     font-size: clamp(20px, 2.8vw, 36px); /* Kembali lebih besar */
     font-weight: 400; letter-spacing: 0.06em; color: var(--moon-silver);
-    margin-bottom: 24px; opacity: 0.8;
+    margin-bottom: 24px; opacity: 100%;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.9);
   }
   .hero-desc {
-    font-size: 16px; line-height: 1.75; color: var(--text-dim);
-    max-width: 480px; margin-bottom: 32px; font-style: italic;
+    font-size: 16px; line-height: 1.75; color: var(--text-light);
+    max-width: 480px; margin-bottom: 32px; 
+    font-style: italic;
+    text-shadow: 0 1px 12px rgba(0,0,0,0.9);
   }
   .hero-cta { display: flex; align-items: center; gap: 24px; }
 
@@ -227,6 +255,230 @@ header, nav, .navbar {
   }
   .book-btn:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
 
+  /* ── BOOK PREVIEW MODAL ── */
+.book-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(4, 6, 15, 0.92);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+}
+.book-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.book-modal {
+  background: linear-gradient(135deg, rgba(15,18,38,0.98) 0%, rgba(8,10,22,0.99) 100%);
+  border: 1px solid rgba(201,168,76,0.25);
+  width: 90%;
+  max-width: 860px;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.book-modal::-webkit-scrollbar { width: 4px; }
+.book-modal::-webkit-scrollbar-track { background: transparent; }
+.book-modal::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); }
+
+/* Tutup */
+.modal-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  background: none;
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  width: 32px; height: 32px;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: rgba(201,168,76,0.15); }
+
+/* Kiri — Cover */
+.modal-left {
+  padding: 40px 28px;
+  border-right: 1px solid rgba(201,168,76,0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: rgba(4,6,15,0.4);
+}
+.modal-cover {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border: 1px solid rgba(201,168,76,0.2);
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+}
+.modal-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.modal-stock {
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border: 1px solid;
+  text-align: center;
+  width: 100%;
+}
+.modal-stock.available { color: #7ec8a0; border-color: rgba(126,200,160,0.4); }
+.modal-stock.unavailable { color: #e07070; border-color: rgba(224,112,112,0.4); }
+
+.modal-cta {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.modal-cta a, .modal-cta button {
+  width: 100%;
+  text-align: center;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: block;
+}
+.modal-btn-primary {
+  background: var(--gold);
+  color: var(--deep-navy);
+  border: none;
+  font-weight: 700;
+}
+.modal-btn-primary:hover { background: var(--gold-light); }
+.modal-btn-ghost {
+  background: none;
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.4);
+}
+.modal-btn-ghost:hover { background: rgba(201,168,76,0.1); }
+
+/* Kanan — Detail */
+.modal-right {
+  padding: 40px 36px 40px 32px;
+}
+.modal-type-badge {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.3);
+  padding: 3px 12px;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+.modal-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 400;
+  color: var(--ivory);
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+.modal-author {
+  font-size: 14px;
+  color: var(--gold-light);
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+/* Metadata grid */
+.modal-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  border-top: 1px solid rgba(201,168,76,0.12);
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  padding: 18px 0;
+  margin-bottom: 20px;
+}
+.meta-item {}
+.meta-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.meta-value {
+  font-size: 13px;
+  color: var(--moon-silver);
+}
+
+.modal-desc-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.modal-desc {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* Preview PDF */
+.modal-preview {
+  margin-top: 24px;
+  border-top: 1px solid rgba(201,168,76,0.12);
+  padding-top: 20px;
+}
+.modal-preview-label {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.modal-pdf-frame {
+  width: 100%;
+  height: 320px;
+  border: 1px solid rgba(201,168,76,0.15);
+  background: rgba(4,6,15,0.6);
+}
+.modal-pdf-placeholder {
+  width: 100%;
+  height: 120px;
+  border: 1px dashed rgba(201,168,76,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 13px;
+}
+
   /* ── NEBULA BAND ── */
   .nebula-band {
     position: relative; z-index: 10; padding: 60px 56px; text-align: center; margin-bottom: 0;
@@ -252,7 +504,8 @@ header, nav, .navbar {
   @keyframes fadeUpDown { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 0.9; transform: translateY(6px); } }
   
   .hero-content {
-    position: relative; z-index: 10;
+    position: relative; 
+    z-index: 10;
     padding: 0 56px; 
     margin-top: 0; /* KUNCI: Hapus margin-top yang bikin berantakan sebelumnya */
     max-width: 700px;
@@ -294,6 +547,8 @@ header, nav, .navbar {
     <div class="swiper-wrapper">
       
       <div class="swiper-slide">
+  <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/bg-1-celestia-rev.png') ?>');"></div>
+
         <div class="moon-glow"></div>
         <svg class="crescent" width="70" height="50" viewBox="0 0 70 50">
           <path d="M55 10 C55 10 30 14 30 25 C30 36 55 40 55 40 C40 38 22 33 22 25 C22 17 40 12 55 10Z" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.8"/>
@@ -313,7 +568,8 @@ header, nav, .navbar {
       </div>
 
       <div class="swiper-slide">
-        <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/the-song-of-achilles-revpng.png') ?>');"></div>
+        <a href="<?= base_url('assets/pdfs/The Song of Achilles - Miller_Madeline.pdf') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+        <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/the-song-of-achilles-revpng.png.png') ?>');"></div>
         
         <div class="hero-content">
           <div class="hero-eyebrow">New Arrival</div>
@@ -321,17 +577,90 @@ header, nav, .navbar {
           <p class="hero-subtitle">Fantasy · Vol. I</p>
           <p class="hero-desc">A tale of gods, kings, and immortal fame. Delve into the tragic and beautiful epic of the Trojan War hero.</p>
           <div class="hero-cta">
-            <a href="<?= base_url('buku/1') ?>" class="btn-primary" style="text-decoration:none;">Read Now</a>
+            <button onclick="openBookModal(1)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="swiper-slide">
+         <a href="<?= base_url('buku/2') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+        <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/babel.png') ?>');"></div>
+        
+        <div class="hero-content">
+          <div class="hero-eyebrow">Hot Topic</div>
+          <h1 class="hero-title">BABEL, Or The<br><span>Necessity Of VIOLENCE</span></h1>
+          <p class="hero-subtitle">Fantasy · Vol. I</p>
+          <p class="hero-desc"> Language is not just communication, but a foundational tool that shapes reality and enforces colonial hierarchies.</p>
+          <div class="hero-cta">
+            <button onclick="openBookModal(2)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="swiper-slide">
+         <a href="<?= base_url('buku/3') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+        <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/capitol-marx.png') ?>');"></div>
+        
+        <div class="hero-content">
+          <div class="hero-eyebrow">PHILOSOPHY 101</div>
+          <h1 class="hero-title">CAPITAL: A Critique of, Or The<br><span>Political Economy</span></h1>
+          <p class="hero-subtitle">Philosophy and Social Theory</p>
+          <p class="hero-desc">a critical analysis of political economy, meant to reveal the economic patterns underpinning the capitalist mode of production.</p>
+          <div class="hero-cta">
+            <button onclick="openBookModal(3)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="swiper-slide">
+         <a href="<?= base_url('buku/4') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+        <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/white-nights.png') ?>');"></div>
+        
+        <div class="hero-content">
+          <div class="hero-eyebrow">ODOC<br></span>One Day One Classic</div>
+          <h1 class="hero-title">WHITE<br><span>Nights</span></h1>
+          <p class="hero-subtitle">Ultimate Timeless Classics</p>
+          <p class="hero-desc">“Your hand is cold, mine burns like fire. How blind you are, Nastenka!”</p>
+          <div class="hero-cta">
+            <button onclick="openBookModal(4)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
           </div>
         </div>
       </div>
 
     </div>
   </div> <div class="scroll-hint">Scroll to discover</div>
+
+  <!-- BOOK PREVIEW MODAL -->
+<div class="book-modal-overlay" id="bookModal">
+  <div class="book-modal">
+    <button class="modal-close" id="modalClose">✕</button>
+
+    <!-- Kiri: Cover + CTA -->
+    <div class="modal-left">
+      <div class="modal-cover" id="modalCover">📖</div>
+      <div class="modal-stock" id="modalStock"></div>
+      <div class="modal-cta" id="modalCta"></div>
+    </div>
+
+    <!-- Kanan: Detail -->
+    <div class="modal-right">
+      <span class="modal-type-badge" id="modalType"></span>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <p class="modal-author" id="modalAuthor"></p>
+
+      <div class="modal-meta-grid" id="modalMeta"></div>
+
+      <div class="modal-desc-label">Sinopsis</div>
+      <p class="modal-desc" id="modalDesc"></p>
+
+      <div class="modal-preview" id="modalPreview"></div>
+    </div>
+  </div>
+</div>
   
   <div class="hero-counter">
     <button class="btn-hero-prev">←</button> 
-    <span id="slideNum">1 / 2</span> 
+    <span id="slideNum">1 / 5</span> 
     <button class="btn-hero-next">→</button>
   </div>
 
@@ -546,34 +875,147 @@ document.getElementById('nextFrame').addEventListener('click', () => { activeFra
 // ── INISIALISASI SWIPER HERO ──
 document.addEventListener("DOMContentLoaded", function() {
   const heroSwiper = new Swiper('.swiper-hero', {
-    loop: false, // Disetel false agar canvas tidak error karena slide duplikat
+    loop: true,
+    speed: 1000,
     effect: 'fade',
-    fadeEffect: {
-      crossFade: true
-    },
+    fadeEffect: { crossFade: true },
     autoplay: {
       delay: 6000,
-      disableOnInteraction: false,
+      disableOnInteraction: true,
     },
-    navigation: {
-      nextEl: '.btn-hero-next',
-      prevEl: '.btn-hero-prev',
-    },
-    on: {
-      init: function () {
-        updateSlideNumber(this);
-      },
-      slideChange: function () {
-        updateSlideNumber(this);
-      }
-    }
   });
 
-  function updateSlideNumber(swiperInstance) {
-    const totalSlides = document.querySelectorAll('.swiper-hero .swiper-slide:not(.swiper-slide-duplicate)').length;
-    const currentSlide = swiperInstance.realIndex + 1;
-    document.getElementById('slideNum').textContent = currentSlide + ' / ' + totalSlides;
+  // Update slide number
+  function updateSlideNumber() {
+    const total = 5; // sesuaikan jumlah slide
+    const current = heroSwiper.realIndex + 1;
+    document.getElementById('slideNum').textContent = current + ' / ' + total;
   }
+
+  // Hubungkan tombol ke Swiper
+  document.querySelector('.btn-hero-prev').addEventListener('click', function() {
+    heroSwiper.slidePrev();
+  });
+
+  document.querySelector('.btn-hero-next').addEventListener('click', function() {
+    heroSwiper.slideNext();
+  });
+
+  // Update nomor saat slide berubah
+  heroSwiper.on('slideChange', function() {
+    updateSlideNumber();
+  });
+
+  // ── BOOK MODAL ──
+function openBookModal(bookId) {
+  fetch(`<?= base_url('buku/detail/') ?>${bookId}`)
+    .then(res => res.json())
+    .then(book => {
+      // Type badge
+      document.getElementById('modalType').textContent = book.type ?? 'Buku';
+
+      // Cover
+      const coverEl = document.getElementById('modalCover');
+      if (book.cover_image) {
+        coverEl.innerHTML = `<img src="<?= base_url('uploads/covers/') ?>${book.cover_image}" alt="${book.title}">`;
+      } else {
+        coverEl.innerHTML = '📖';
+      }
+
+      // Judul & Author
+      document.getElementById('modalTitle').textContent = book.title;
+      document.getElementById('modalAuthor').textContent = book.author;
+
+      // Stock
+      const stockEl = document.getElementById('modalStock');
+      if (parseInt(book.stock_available) > 0) {
+        stockEl.textContent = `✦ ${book.stock_available} Tersedia`;
+        stockEl.className = 'modal-stock available';
+      } else {
+        stockEl.textContent = '✦ Tidak Tersedia';
+        stockEl.className = 'modal-stock unavailable';
+      }
+
+      // Metadata
+      document.getElementById('modalMeta').innerHTML = `
+        <div class="meta-item">
+          <div class="meta-label">Penerbit</div>
+          <div class="meta-value">${book.publisher ?? '—'}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Tahun</div>
+          <div class="meta-value">${book.year ?? '—'}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">ISBN</div>
+          <div class="meta-value">${book.isbn ?? '—'}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Bahasa</div>
+          <div class="meta-value">${book.language ?? '—'}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Halaman</div>
+          <div class="meta-value">${book.pages ? book.pages + ' hlm' : '—'}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Call Number</div>
+          <div class="meta-value">${book.call_number ?? '—'}</div>
+        </div>
+      `;
+
+      // Deskripsi
+      document.getElementById('modalDesc').textContent = book.description ?? 'Tidak ada sinopsis.';
+
+      // CTA
+      let ctaHtml = '';
+      if (book.file_pdf) {
+        ctaHtml += `<a href="<?= base_url('uploads/pdf/') ?>${book.file_pdf}" target="_blank" class="modal-btn-primary">Baca Sekarang</a>`;
+      }
+      ctaHtml += `<a href="<?= base_url('buku/') ?>${book.id}" class="modal-btn-ghost">Lihat Halaman Buku</a>`;
+      document.getElementById('modalCta').innerHTML = ctaHtml;
+
+      // Preview PDF
+      const previewEl = document.getElementById('modalPreview');
+      if (book.file_pdf) {
+        previewEl.innerHTML = `
+          <div class="modal-preview-label">Preview Dokumen</div>
+          <iframe class="modal-pdf-frame" src="<?= base_url('uploads/pdf/') ?>${book.file_pdf}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" frameborder="0"></iframe>
+        `;
+      } else {
+        previewEl.innerHTML = `
+          <div class="modal-preview-label">Preview Dokumen</div>
+          <div class="modal-pdf-placeholder">✦ Preview tidak tersedia untuk koleksi ini ✦</div>
+        `;
+      }
+
+      // Buka modal
+      document.getElementById('bookModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    })
+    .catch(err => console.error('Gagal memuat data buku:', err));
+}
+
+// Tutup modal
+document.getElementById('modalClose').addEventListener('click', () => {
+  document.getElementById('bookModal').classList.remove('active');
+  document.body.style.overflow = '';
+});
+document.getElementById('bookModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
+
+// Tutup dengan ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('bookModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
+
 });
 </script>
 <?= $this->endSection() ?>

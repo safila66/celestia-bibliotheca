@@ -192,14 +192,14 @@
 
     <div class="nav-links">
         <a href="/" class="nav-link <?= current_url() === base_url('/') ? 'active' : '' ?>">Beranda</a>
-        <a href="/katalog" class="nav-link <?= str_contains(current_url(), 'katalog') ? 'active' : '' ?>">Katalog</a>
+        <a href="/catalog" class="nav-link <?= str_contains(current_url(), 'catalog') ? 'active' : '' ?>">catalog</a>
         <a href="/collections" class="nav-link">Koleksi</a>
         <a href="/reading-rooms" class="nav-link">Ruang Baca</a>
         <a href="/archives" class="nav-link">Arsip</a>
         <a href="/about" class="nav-link">Tentang</a>
     </div>
 
-    <form action="/katalog" method="get" class="nav-search">
+    <form action="/catalog" method="get" class="nav-search">
         <span>🔭</span>
         <input type="text" name="q" placeholder="Cari koleksi..." value="<?= esc(request()->getGet('q') ?? '') ?>">
     </form>

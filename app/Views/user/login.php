@@ -134,7 +134,7 @@
             "Ad astra per libros —<br>Menuju bintang<br>melalui buku."
         </div>
         <div class="deco-links">
-            <a href="/katalog" class="deco-link">Katalog</a>
+            <a href="/catalog" class="deco-link">catalog</a>
             <a href="/about" class="deco-link">Tentang</a>
         </div>
     </div>

@@ -31,7 +31,7 @@ class CatalogController extends BaseController
         if ($category) {
             // Asumsi nama kolom di databasemu adalah 'category'
             $query = $query->like('category', $category);
-            $judulLayar = "Katalog: " . ucfirst($category);
+            $judulLayar = "catalog: " . ucfirst($category);
         }
 
         // Jika user mengetik di kotak pencarian "Search the Stars"
@@ -53,7 +53,7 @@ class CatalogController extends BaseController
         // Eksekusi pencarian dan ambil semua hasilnya
         $daftarBuku = $query->findAll();
 
-        // Siapkan data untuk dikirim ke file View (katalog.php)
+        // Siapkan data untuk dikirim ke file View (catalog.php)
         $data = [
             'title'          => $judulLayar . ' | Celestia Bibliotheca',
             'buku'           => $daftarBuku,
