@@ -49,8 +49,8 @@
 
 header, nav, .navbar {
     background: rgba(4, 6, 15, 0.2) !important; /* Warna gelap transparan tipis */
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    backdrop-filter: blur(0px) !important;
+    -webkit-backdrop-filter: blur(0px) !important;
     border-bottom: 1px solid rgba(201,168,76,0.12) !important;
   }
 
@@ -137,8 +137,8 @@ header, nav, .navbar {
 .hero-card {
     padding: 28px 40px; 
     background: rgba(4, 6, 15, 0.2); /* Transparan gelap sangat tipis */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
     border-right: 1px solid rgba(201,168,76,0.12);
     cursor: pointer; 
     transition: all 0.3s ease;
