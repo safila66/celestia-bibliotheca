@@ -1,0 +1,579 @@
+<?= $this->extend('layouts/template') ?>
+
+<?= $this->section('styles') ?>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<style>
+  /* ── HERO SECTION & SWIPER ── */
+  #hero {
+    position: relative; 
+    width: 100%; 
+    height: 100vh; /* Kunci tinggi 100% layar */
+    overflow: hidden; 
+    margin-top: -80px; 
+    background-color: var(--deep-navy); 
+  }
+
+  .swiper-hero {
+    width: 100%; 
+    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
+    z-index: 1; /* Posisi di paling belakang */
+  }
+
+  /* 1. GAMBAR UTAMA (Pastikan ukurannya full dan cerah) */
+  .slide-bg {
+    position: absolute; 
+    inset: 0;
+    background-size: cover; 
+    background-position: center top; 
+    z-index: 1; 
+    opacity: 1; /* Harus 1 agar gambarnya muncul penuh */
+  }
+
+  /* 2. EFEK KACA BURAM (Glassmorphism) */
+  .slide-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: rgba(201, 168, 76, 0.08); 
+    
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    
+    /* MASKING BARU: Hanya Blur di area Bawah saja, yang Atas dibiarkan jernih */
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 35%);
+    mask-image: linear-gradient(to top, black 0%, transparent 35%);
+  }
+
+header, nav, .navbar {
+    background: rgba(4, 6, 15, 0.2) !important; /* Warna gelap transparan tipis */
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(201,168,76,0.12) !important;
+  }
+
+  .goddess-overlay {
+    position: absolute; right: -2%; bottom: 0;
+    width: 54%; height: 100%;
+    z-index: 2; pointer-events: none;
+    display: flex; align-items: flex-end; justify-content: center;
+  }
+  .goddess-overlay canvas {
+    width: 100%; height: 100%;
+    object-fit: contain; object-position: bottom center;
+    opacity: 0.22; filter: brightness(1.1) contrast(1.05);
+  }
+  .goddess-overlay::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to right, var(--deep-navy) 0%, transparent 30%, transparent 70%, var(--deep-navy) 100%),
+                linear-gradient(to top, var(--deep-navy) 0%, transparent 20%);
+  }
+
+  .moon-glow {
+    position: absolute; right: 18%; top: 12%;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,208,200,0.12) 0%, transparent 70%);
+    z-index: 1; animation: moonPulse 6s ease-in-out infinite;
+  }
+  @keyframes moonPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+
+  .crescent {
+    position: absolute; right: 21.5%; top: 10%;
+    z-index: 3; opacity: 0.75;
+    animation: moonPulse 6s ease-in-out infinite;
+  }
+
+  .hero-content {
+    position: relative; z-index: 10;
+    padding: 0 56px; 
+    max-width: 700px;
+  }
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 18px;
+    font-family: 'Raleway', sans-serif; font-size: 11px;
+    letter-spacing: 0.22em; color: var(--gold); text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero-eyebrow::after {
+    content: ''; display: block; width: 60px; height: 1px;
+    background: var(--gold); opacity: 0.5;
+  }
+  .hero-title {
+    font-family: 'Cinzel', serif; 
+    font-size: clamp(42px, 6vw, 86px); /* Ini mengembalikan ukuran besar aslinya */
+    font-weight: 400; line-height: 1.0; letter-spacing: 0.02em;
+    color: var(--ivory); margin-bottom: 10px;
+  }
+  .hero-title span { color: var(--gold-light); }
+  .hero-subtitle {
+    font-family: 'Cinzel', serif; 
+    font-size: clamp(20px, 2.8vw, 36px); /* Kembali lebih besar */
+    font-weight: 400; letter-spacing: 0.06em; color: var(--moon-silver);
+    margin-bottom: 24px; opacity: 0.8;
+  }
+  .hero-desc {
+    font-size: 16px; line-height: 1.75; color: var(--text-dim);
+    max-width: 480px; margin-bottom: 32px; font-style: italic;
+  }
+  .hero-cta { display: flex; align-items: center; gap: 24px; }
+
+  /* ── QUICK CARDS ── */
+.hero-cards {
+    position: absolute !important; /* Kunci paksa posisi */
+    bottom: 0 !important;          /* Tempel ketat ke bawah */
+    left: 0; 
+    right: 0; 
+    z-index: 30; /* Pastikan selalu di depan */
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid rgba(201,168,76,0.2);
+    background: transparent; /* Tetap transparan */
+  }
+.hero-card {
+    padding: 28px 40px; 
+    background: rgba(4, 6, 15, 0.2); /* Transparan gelap sangat tipis */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(201,168,76,0.12);
+    cursor: pointer; 
+    transition: all 0.3s ease;
+  }
+  
+  .hero-card:hover { 
+    background: rgba(201, 168, 76, 0.15); 
+  }
+
+  .card-eyebrow {
+    font-family: 'Raleway', sans-serif; font-size: 10px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 8px;
+  }
+  .card-title {
+    font-family: 'Cinzel', serif; font-size: 15px; font-weight: 600;
+    color: var(--ivory); margin-bottom: 4px;
+  }
+  .card-sub { font-size: 13px; color: var(--text-dim); font-style: italic; }
+
+  /* ── SECTION DIVIDER & HEADERS ── */
+  .section-header { text-align: center; padding: 80px 56px 48px; position: relative; z-index: 10; }
+  .section-header h2 {
+    font-family: 'Cinzel', serif; font-size: clamp(22px, 3vw, 36px);
+    font-weight: 400; letter-spacing: 0.12em; color: var(--ivory); margin-bottom: 12px;
+  }
+  .section-header p { font-style: italic; color: var(--text-dim); font-size: 15px; }
+  .divider-rune { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 18px; }
+  .divider-rune::before, .divider-rune::after {
+    content: ''; display: block; width: 80px; height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold));
+  }
+  .divider-rune::after { background: linear-gradient(to left, transparent, var(--gold)); }
+
+  /* ── CATEGORY FRAMES ── */
+  #categories { position: relative; z-index: 10; padding: 0 40px 100px; }
+  .frames-row { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: nowrap; }
+  .frame-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); position: relative; }
+  .frame-item:hover { transform: translateY(-12px) scale(1.07); z-index: 20; }
+  .frame-item.active { transform: translateY(-18px) scale(1.14); z-index: 21; }
+  .frame-item.side { transform: scale(0.78); opacity: 0.6; }
+  .frame-item.side:hover { transform: scale(0.85) translateY(-8px); opacity: 0.85; }
+  .frame-item.near { transform: scale(0.9); opacity: 0.8; }
+  .frame-item.near:hover { transform: scale(0.97) translateY(-10px); opacity: 0.95; }
+  .frame-svg-wrap { position: relative; width: 160px; height: 200px; display: flex; align-items: center; justify-content: center; background: none !important; }
+  .frame-label { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.1em; color: var(--moon-silver); text-align: center; margin-top: 6px; transition: color 0.2s; }
+  .frame-item:hover .frame-label, .frame-item.active .frame-label { color: var(--gold-light); }
+  .frame-sub { font-size: 10px; letter-spacing: 0.08em; color: var(--text-dim); text-align: center; margin-top: 3px; font-family: 'Raleway', sans-serif; }
+  .frame-info { text-align: center; margin-top: 40px; min-height: 60px; transition: opacity 0.3s; }
+  .frame-info h3 { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 600; color: var(--gold-light); margin-bottom: 6px; }
+  .frame-info p { font-style: italic; color: var(--text-dim); font-size: 14px; }
+  .frame-arrows { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 18px; }
+  .frame-arrows button { background: none; border: 1px solid rgba(201,168,76,0.3); color: var(--gold); width: 36px; height: 36px; cursor: pointer; font-size: 16px; transition: all 0.2s; }
+  .frame-arrows button:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+  .frame-arrows span { font-family: 'Raleway', sans-serif; font-size: 12px; letter-spacing: 0.1em; color: var(--text-dim); }
+  .frame-item image { transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease; filter: drop-shadow(0 0 0px transparent); }
+  .frame-item:hover image, .frame-item.active image { opacity: 1 !important; filter: drop-shadow(0 0 12px #E8C96A) drop-shadow(0 0 4px #C9A84C) !important; }
+
+  /* ── COLLECTION GRID ── */
+  #collection { position: relative; z-index: 10; padding: 0 56px 120px; }
+  .collection-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .book-card {
+    background: linear-gradient(135deg, rgba(15,18,38,0.9) 0%, rgba(8,10,22,0.95) 100%);
+    border: 1px solid rgba(201,168,76,0.12); padding: 28px 22px 22px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .book-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .book-card:hover { border-color: rgba(201,168,76,0.35); transform: translateY(-4px); }
+  .book-card:hover::before { opacity: 1; }
+  .book-cover {
+    width: 100%; aspect-ratio: 2/3; object-fit: cover; margin-bottom: 16px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex; align-items: center; justify-content: center; font-size: 40px;
+  }
+  .book-genre { font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .book-title { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600; color: var(--ivory); margin-bottom: 4px; line-height: 1.3; }
+  .book-author { font-size: 12px; color: var(--text-dim); font-style: italic; margin-bottom: 12px; }
+  .book-meta { display: flex; justify-content: space-between; align-items: center; }
+  .stars { color: var(--gold); font-size: 11px; letter-spacing: 2px; }
+  .book-btn {
+    font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--gold); background: none; border: 1px solid rgba(201,168,76,0.3); padding: 5px 14px; cursor: pointer; transition: all 0.2s; text-decoration: none;
+  }
+  .book-btn:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+
+  /* ── NEBULA BAND ── */
+  .nebula-band {
+    position: relative; z-index: 10; padding: 60px 56px; text-align: center; margin-bottom: 0;
+    background: linear-gradient(135deg, rgba(60,20,80,0.18) 0%, rgba(20,40,90,0.22) 50%, rgba(60,20,80,0.18) 100%);
+    border-top: 1px solid rgba(201,168,76,0.1); border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .nebula-band h2 { font-family: 'Cinzel', serif; font-size: 28px; font-weight: 400; letter-spacing: 0.1em; color: var(--ivory); margin-bottom: 10px; }
+  .nebula-band p { font-style: italic; color: var(--text-dim); margin-bottom: 28px; }
+  .nebula-band input {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(201,168,76,0.3); color: var(--ivory); font-family: 'EB Garamond', serif; font-size: 15px; padding: 12px 24px; width: 360px; max-width: 100%; margin-right: 12px; outline: none;
+  }
+  .nebula-band input::placeholder { color: var(--text-dim); font-style: italic; }
+  .nebula-band input:focus { border-color: var(--gold); }
+
+  /* ── SCROLL INDICATOR & COUNTER ── */
+  .scroll-hint { 
+    position: absolute; bottom: 105px; left: 56px; 
+    z-index: 20; display: flex; align-items: center; gap: 10px; 
+    font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.2em; 
+    color: var(--text-dim); text-transform: uppercase; animation: fadeUpDown 2.5s ease-in-out infinite; 
+  }
+  .scroll-hint::before { content: ''; width: 1px; height: 40px; background: linear-gradient(to bottom, transparent, var(--gold-dim)); }
+  @keyframes fadeUpDown { 0%, 100% { opacity: 0.4; transform: translateY(0); } 50% { opacity: 0.9; transform: translateY(6px); } }
+  
+  .hero-content {
+    position: relative; z-index: 10;
+    padding: 0 56px; 
+    margin-top: 0; /* KUNCI: Hapus margin-top yang bikin berantakan sebelumnya */
+    max-width: 700px;
+  }
+
+  .hero-counter { 
+    position: absolute; bottom: 105px; right: 56px; 
+    z-index: 20; font-family: 'Raleway', sans-serif; font-size: 12px; 
+    letter-spacing: 0.1em; color: var(--text-dim); display: flex; align-items: center; gap: 16px; 
+  }
+
+  .hero-counter button { 
+    background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); 
+    color: var(--gold); width: 36px; height: 36px; border-radius: 50%;
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease; pointer-events: auto; 
+  }
+
+ .hero-counter button:hover { 
+    background: rgba(201,168,76,0.3); border-color: var(--gold); color: var(--ivory);
+  }
+
+ @media (max-height: 750px) {
+    .swiper-slide { padding-top: 90px; }
+    .hero-title { font-size: 42px; }
+    .hero-subtitle { font-size: 20px; }
+    .hero-desc { font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
+    .scroll-hint, .hero-counter { bottom: 95px; }
+    .hero-cards .hero-card { padding: 18px 30px; } /* Kartu bawah ikut dikecilkan sedikit */
+  }
+</style>
+<?= $this->endSection() ?>
+
+
+<?= $this->section('content') ?>
+<section id="hero">
+  
+  <div class="swiper swiper-hero">
+    <div class="swiper-wrapper">
+      
+      <div class="swiper-slide">
+        <div class="moon-glow"></div>
+        <svg class="crescent" width="70" height="50" viewBox="0 0 70 50">
+          <path d="M55 10 C55 10 30 14 30 25 C30 36 55 40 55 40 C40 38 22 33 22 25 C22 17 40 12 55 10Z" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.8"/>
+        </svg>
+        <div class="goddess-overlay"><canvas id="goddessCanvas"></canvas></div>
+
+        <div class="hero-content">
+          <div class="hero-eyebrow">The Eternal Archive</div>
+          <h1 class="hero-title">CELESTIA<br><span>BIBLIOTHECA</span></h1>
+          <p class="hero-subtitle">Where Stars Write in Ink</p>
+          <p class="hero-desc">A celestial sanctuary of knowledge, myth, and wonder. Explore thousands of volumes illuminated beneath an eternal night sky from ancient lore to the furthest reaches of imagination 🪶✨.</p>
+          <div class="hero-cta">
+            <a href="<?= base_url('register') ?>" class="btn-primary" style="text-decoration:none;">Enter the Archive</a>
+            <a href="<?= base_url('catalog') ?>" class="btn-ghost">Browse Collections</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="swiper-slide">
+        <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/the-song-of-achilles-revpng.png') ?>');"></div>
+        
+        <div class="hero-content">
+          <div class="hero-eyebrow">New Arrival</div>
+          <h1 class="hero-title">THE SONG OF<br><span>ACHILLES</span></h1>
+          <p class="hero-subtitle">Fantasy · Vol. I</p>
+          <p class="hero-desc">A tale of gods, kings, and immortal fame. Delve into the tragic and beautiful epic of the Trojan War hero.</p>
+          <div class="hero-cta">
+            <a href="<?= base_url('buku/1') ?>" class="btn-primary" style="text-decoration:none;">Read Now</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div> <div class="scroll-hint">Scroll to discover</div>
+  
+  <div class="hero-counter">
+    <button class="btn-hero-prev">←</button> 
+    <span id="slideNum">1 / 2</span> 
+    <button class="btn-hero-next">→</button>
+  </div>
+
+  <div class="hero-cards">
+    <a href="<?= base_url('buku/1') ?>" class="hero-card" style="text-decoration: none; display: block;">
+      <div class="card-eyebrow">New Arrival</div>
+      <div class="card-title">The Song Of Achilles</div>
+      <div class="card-sub">Fantasy · Vol. I added to collection</div>
+    </a>
+
+    <a href="<?= base_url('reading-rooms') ?>" class="hero-card" style="text-decoration: none; display: block;">
+      <div class="card-eyebrow">Reading Room</div>
+      <div class="card-title">Moonlit Reading Session</div>
+      <div class="card-sub">Every eve at 8 & 10 PM · Open to all</div>
+    </a>
+
+    <a href="<?= base_url('mini-journalism') ?>" class="hero-card" style="text-decoration: none; display: block;">
+      <div class="card-eyebrow">What's New</div>
+      <div class="card-title">Romance classic Discussion...</div>
+      <div class="card-sub">Curator's choice · Minor Journalism</div>
+    </a>
+  </div>
+
+</section>
+
+<section>
+  <div class="section-header">
+    <div class="divider-rune">✦</div>
+    <h2>Explore the Constellations</h2>
+    <p>Each constellation guards a different realm of knowledge. Choose your path.</p>
+  </div>
+  <div id="categories">
+    <div class="frames-row" id="framesRow"></div>
+    <div class="frame-info" id="frameInfo"></div>
+    <div class="frame-arrows">
+      <button id="prevFrame">←</button> <span id="frameCounter">3 / 7</span> <button id="nextFrame">→</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-header">
+    <div class="divider-rune">✦</div>
+    <h2>Featured Volumes</h2>
+    <p>Curated from across the celestial archive</p>
+  </div>
+  <div id="collection">
+    <div class="collection-grid" id="bookGrid">
+      <?php if (!empty($featured)): ?>
+        <?php foreach ($featured as $buku): ?>
+          <div class="book-card">
+            <div class="book-cover">🌙</div> 
+            <div class="book-genre"><?= esc($buku['kategori'] ?? 'Archive') ?></div>
+            <div class="book-title"><?= esc($buku['title']) ?></div>
+            <div class="book-author"><?= esc($buku['author'] ?? 'Unknown Scholar') ?></div>
+            <div class="book-meta">
+              <span class="stars">★★★★★</span>
+              <a href="<?= base_url('buku/' . $buku['id']) ?>" class="book-btn">Read</a>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p style="color:var(--moon-silver); text-align:center; grid-column:1/-1;">Data buku kosong. Silakan tambahkan buku di Database!</p>
+      <?php endif; ?>
+    </div>
+  </div>
+</section>
+
+<div class="nebula-band">
+  <h2>Search the Stars</h2>
+  <p>Every star is a story. Find yours.</p>
+  <form action="<?= base_url('catalog') ?>" method="get" style="display:inline-flex; align-items:center;">
+    <input type="text" name="q" placeholder="Title, author, constellation…" />
+    <button type="submit" class="btn-primary">Search</button>
+  </form>
+</div>
+<?= $this->endSection() ?>
+
+
+<?= $this->section('scripts') ?>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+// ── GODDESS CANVAS ──
+(function() {
+  const canvas = document.getElementById('goddessCanvas');
+  if (!canvas) return;
+  function setSize() {
+    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+  }
+  setSize();
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  const dw = canvas.offsetWidth, dh = canvas.offsetHeight;
+
+  ctx.save();
+  ctx.globalAlpha = 1;
+  const fig = ctx.createLinearGradient(dw*0.35, 0, dw*0.65, dh);
+  fig.addColorStop(0, 'rgba(212,208,200,0.28)');
+  fig.addColorStop(0.4, 'rgba(212,208,200,0.22)');
+  fig.addColorStop(1, 'rgba(212,208,200,0.04)');
+  ctx.fillStyle = fig;
+
+  const cx = dw * 0.5, cy = dh * 0.1;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + dh*0.055, dw*0.058, dh*0.072, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy + dh*0.005, dw*0.04, Math.PI*1.1, Math.PI*1.9, false);
+  ctx.lineWidth = dw*0.012; ctx.strokeStyle = 'rgba(201,168,76,0.55)'; ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(cx - dw*0.06, cy + dh*0.13);
+  ctx.bezierCurveTo(cx - dw*0.14, cy + dh*0.22, cx - dw*0.22, cy + dh*0.38, cx - dw*0.18, cy + dh*0.6);
+  ctx.bezierCurveTo(cx - dw*0.12, cy + dh*0.82, cx - dw*0.08, cy + dh*0.92, cx, cy + dh*0.97);
+  ctx.bezierCurveTo(cx + dw*0.08, cy + dh*0.92, cx + dw*0.12, cy + dh*0.82, cx + dw*0.18, cy + dh*0.6);
+  ctx.bezierCurveTo(cx + dw*0.22, cy + dh*0.38, cx + dw*0.14, cy + dh*0.22, cx + dw*0.06, cy + dh*0.13);
+  ctx.closePath(); ctx.fillStyle = fig; ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + dh*0.12);
+  ctx.bezierCurveTo(cx + dw*0.15, cy + dh*0.04, cx + dw*0.38, cy + dh*0.08, cx + dw*0.44, cy + dh*0.22);
+  ctx.bezierCurveTo(cx + dw*0.46, cy + dh*0.35, cx + dw*0.32, cy + dh*0.42, cx + dw*0.18, cy + dh*0.44);
+  ctx.bezierCurveTo(cx + dw*0.08, cy + dh*0.42, cx + dw*0.04, cy + dh*0.32, cx, cy + dh*0.2);
+  ctx.fillStyle = 'rgba(200,195,185,0.13)'; ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + dh*0.12);
+  ctx.bezierCurveTo(cx - dw*0.15, cy + dh*0.04, cx - dw*0.38, cy + dh*0.08, cx - dw*0.44, cy + dh*0.22);
+  ctx.bezierCurveTo(cx - dw*0.46, cy + dh*0.35, cx - dw*0.32, cy + dh*0.42, cx - dw*0.18, cy + dh*0.44);
+  ctx.bezierCurveTo(cx - dw*0.08, cy + dh*0.42, cx - dw*0.04, cy + dh*0.32, cx, cy + dh*0.2);
+  ctx.fillStyle = 'rgba(200,195,185,0.13)'; ctx.fill();
+  ctx.restore();
+})();
+
+// ── CATEGORY FRAMES ──
+const categories = [
+  { icon: '<?= base_url("assets/images/icon computer.png") ?>', label: 'Computer, Information, and General Knowledge', id: '000', sub: '1,240 volumes', info: 'Tales of gods, heroes, and the cosmos across all ancient cultures.' },
+  { icon: '<?= base_url("assets/images/icon philosophy-psychology.png") ?>', label: 'Philosophy and Psychology', id: '100', sub: '834 volumes', info: 'Arcane sciences, transmutation, and the philosopher\'s stone.' },
+  { icon: '<?= base_url("assets/images/icon religion.png") ?>', label: 'Religion', id: '200', sub: '612 volumes', info: 'Creatures of legend, celestial beasts, and mythic fauna.' },
+  { icon: '<?= base_url("assets/images/icon social-sciences.png") ?>', label: 'Social Sciences', id: '300', sub: '1,560 volumes', info: 'The architecture of the heavens, star maps, and astral lore.' },
+  { icon: '<?= base_url("assets/images/icon language-literature.png") ?>', label: 'Language and Literature', id: '4,000', sub: '2,100 volumes', info: 'Ancient manuscripts, sacred texts, and forbidden knowledge.' },
+  { icon: '<?= base_url("assets/images/icon sciences.png") ?>', label: 'Sciences', id: '500', sub: '1,998 volumes', info: 'Oracles, prophecy, and the art of reading fate in stars.' },
+  { icon: '<?= base_url("assets/images/icon technology.png") ?>', label: 'Technology', id: '600', sub: '780 volumes', info: 'Heroic sagas, quests, and the trials of legendary figures.' },
+  { icon: '<?= base_url("assets/images/icon arts-literature.png") ?>', label: 'Arts and Literature', id: '800', sub: '1,883 volumes', info: 'Heroic sagas, quests, and the trials of legendary figures.' },
+  { icon: '<?= base_url("assets/images/icon history-geography.png") ?>', label: 'History and Geography', id: '900', sub: '3,005 volumes', info: 'Heroic sagas, quests, and the trials of legendary figures.' },
+];
+let activeFrame = 3;
+
+function renderFrames() {
+  const row = document.getElementById('framesRow');
+  row.innerHTML = '';
+  const total = categories.length;
+  
+  const positions = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+
+  positions.forEach(offset => {
+    const idx = ((activeFrame + offset) % total + total) % total;
+    const cat = categories[idx];
+    const item = document.createElement('div');
+    item.className = 'frame-item' + (offset === 0 ? ' active' : offset === -1 || offset === 1 ? ' near' : ' side');
+
+    const frameColors = ['#7A5C28','#8B6914','#9E7A2C','#C9A84C','#9E7A2C','#8B6914','#7A5C28'];
+    const fc = frameColors[offset + 3] || '#7A5C28';
+    const fc2 = offset === 0 ? '#E8C96A' : '#C9A84C';
+
+    item.innerHTML = `
+      <div class="frame-svg-wrap">${getFrameSVG(fc, fc2, cat.icon, offset === 0)}</div>
+      <div class="frame-label">${cat.label}</div>
+    `;
+    
+    item.addEventListener('click', () => { 
+      if (activeFrame === idx) {
+        window.location.href = "<?= base_url('catalog?kategori=') ?>" + cat.slug;
+      } else {
+        activeFrame = idx; 
+        renderFrames(); 
+      }
+    });
+    
+    row.appendChild(item);
+  });
+
+  const activeCat = categories[activeFrame];
+  document.getElementById('frameInfo').innerHTML = `
+    <h3>${activeCat.label}</h3>
+    <p>${activeCat.info}</p>
+    <a href="<?= base_url('catalog?kategori=') ?>${activeCat.slug}" class="btn-ghost" style="margin-top: 12px; display: inline-block;">
+      Jelajahi Koleksi ${activeCat.label} ➔
+    </a>
+  `;
+  document.getElementById('frameCounter').textContent = `${activeFrame + 1} / ${total}`;
+}
+
+function getFrameSVG(fc, fc2, iconUrl, active) {
+  const imgSize = active ? 200 : 170;
+  const xPos = 80 - (imgSize / 2);
+  const yPos = 100 - (imgSize / 2);
+
+  return `
+  <svg viewBox="0 0 160 200" width="160" height="200" xmlns="http://www.w3.org/2000/svg">
+    <image href="${iconUrl}" x="${xPos}" y="${yPos}" width="${imgSize}" height="${imgSize}" preserveAspectRatio="xMidYMid meet" opacity="${active ? 1 : 0.5}" />
+  </svg>`;
+}
+renderFrames();
+document.getElementById('prevFrame').addEventListener('click', () => { activeFrame = (activeFrame - 1 + categories.length) % categories.length; renderFrames(); });
+document.getElementById('nextFrame').addEventListener('click', () => { activeFrame = (activeFrame + 1) % categories.length; renderFrames(); });
+
+
+// ── INISIALISASI SWIPER HERO ──
+document.addEventListener("DOMContentLoaded", function() {
+  const heroSwiper = new Swiper('.swiper-hero', {
+    loop: false, // Disetel false agar canvas tidak error karena slide duplikat
+    effect: 'fade',
+    fadeEffect: {
+      crossFade: true
+    },
+    autoplay: {
+      delay: 6000,
+      disableOnInteraction: false,
+    },
+    navigation: {
+      nextEl: '.btn-hero-next',
+      prevEl: '.btn-hero-prev',
+    },
+    on: {
+      init: function () {
+        updateSlideNumber(this);
+      },
+      slideChange: function () {
+        updateSlideNumber(this);
+      }
+    }
+  });
+
+  function updateSlideNumber(swiperInstance) {
+    const totalSlides = document.querySelectorAll('.swiper-hero .swiper-slide:not(.swiper-slide-duplicate)').length;
+    const currentSlide = swiperInstance.realIndex + 1;
+    document.getElementById('slideNum').textContent = currentSlide + ' / ' + totalSlides;
+  }
+});
+</script>
+<?= $this->endSection() ?>
