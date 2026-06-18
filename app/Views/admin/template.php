@@ -9,21 +9,21 @@
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg:       #100c05;
-            --deep:     #0d0900;
-            --panel:    #140f06;
-            --border:   #2a1e08;
-            --border2:  #3a2a10;
-            --gold:     #c9a870;
-            --gold-dim: #7a6030;
-            --gold-sub: #3a2808;
-            --text:     #e8d8b8;
-            --muted:    #9a8060;
-            --subtle:   #5a4010;
-            --ok:       #70a060;
-            --warn:     #d87040;
-            --danger:   #c05050;
-        }
+    --bg:       #f4ecd8;
+    --deep:     #ece1c4;
+    --panel:    #e3d4ad;
+    --border:   #c9b384;
+    --border2:  #b09660;
+    --gold:     #8a6420;
+    --gold-dim: #a07830;
+    --gold-sub: #6e5018;
+    --text:     #2e2410;
+    --muted:    #5a4828;
+    --subtle:   #8a7048;
+    --ok:       #4a7a3a;
+    --warn:     #b85a20;
+    --danger:   #a03030;
+}
 
         body {
             font-family: 'EB Garamond', serif;
@@ -124,7 +124,7 @@
 
         .topbar-avatar {
             width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #2a1500, #5a3010);
+            background: linear-gradient(135deg, #c9a060, #8a6420);
             border: 1px solid var(--border2);
             display: flex; align-items: center; justify-content: center;
             font-family: 'Cinzel', serif; font-size: .6rem; color: var(--gold);
@@ -138,8 +138,8 @@
             padding: .65rem 1.5rem; font-size: .78rem;
             display: flex; align-items: center; gap: .6rem;
         }
-        .flash.success { background: rgba(30,60,30,.4); border-bottom: 1px solid #1a3a20; color: #70c080; }
-        .flash.error   { background: rgba(60,20,20,.4); border-bottom: 1px solid #3a1010; color: #e07070; }
+        .flash.success { background: rgba(74,122,58,.12); border-bottom: 1px solid #4a7a3a; color: #3a6030; }
+        .flash.error   { background: rgba(160,48,48,.12); border-bottom: 1px solid #a03030; color: #8a2828; }
 
         /* ── Utilities ───────────────────────────────── */
         .page-header {
@@ -213,10 +213,10 @@
         .badge {
             font-size: .6rem; padding: 2px 7px; border-radius: 10px; border: 1px solid;
         }
-        .badge-ok     { background: rgba(30,60,30,.4); color: var(--ok);     border-color: #1a3a20; }
-        .badge-warn   { background: rgba(50,30,10,.4); color: var(--warn);   border-color: #3a2010; }
-        .badge-danger { background: rgba(50,15,15,.4); color: var(--danger); border-color: #3a1010; }
-        .badge-subtle { background: var(--panel);      color: var(--muted);  border-color: var(--border); }
+        .badge-ok     { background: rgba(74,122,58,.15); color: var(--ok);     border-color: #4a7a3a; }
+.badge-warn   { background: rgba(184,90,32,.15); color: var(--warn);   border-color: #b85a20; }
+.badge-danger { background: rgba(160,48,48,.15); color: var(--danger); border-color: #a03030; }
+.badge-subtle { background: var(--panel);        color: var(--muted);  border-color: var(--border); }
     </style>
     <?= $this->renderSection('styles') ?>
 </head>
@@ -235,17 +235,20 @@
             <a href="/admin" class="nav-item <?= current_url() === base_url('admin') ? 'active' : '' ?>">
                 📊 Dashboard
             </a>
-            <a href="/admin/koleksi" class="nav-item <?= str_contains(current_url(),'admin/koleksi') ? 'active' : '' ?>">
+            <a href="/admin/books" class="nav-item <?= str_contains(current_url(),'admin/books') ? 'active' : '' ?>">
                 📚 Koleksi Buku
             </a>
-            <a href="/admin/anggota" class="nav-item <?= str_contains(current_url(),'admin/anggota') ? 'active' : '' ?>">
+            <a href="/admin/users" class="nav-item <?= str_contains(current_url(),'admin/users') ? 'active' : '' ?>">
                 👥 Anggota
+            </a>
+            <a href="/admin/list/superadmin" class="nav-item <?= str_contains(current_url(),'admin/list/superadmin') ? 'active' : '' ?>">
+                🛡️ Manajemen Admin
             </a>
         </div>
 
         <div class="nav-group">
             <div class="nav-group-label">Sirkulasi</div>
-            <a href="/admin/peminjaman" class="nav-item <?= str_contains(current_url(),'admin/peminjaman') ? 'active' : '' ?>">
+            <a href="/admin/loan" class="nav-item <?= str_contains(current_url(),'admin/loan') ? 'active' : '' ?>">
                 📋 Peminjaman
             </a>
             <a href="/admin/delivery" class="nav-item <?= str_contains(current_url(),'admin/delivery') ? 'active' : '' ?>">
@@ -264,8 +267,8 @@
             <a href="/admin/kategori" class="nav-item <?= str_contains(current_url(),'admin/kategori') ? 'active' : '' ?>">
                 📦 Kategori
             </a>
-            <a href="/admin/laporan" class="nav-item <?= str_contains(current_url(),'admin/laporan') ? 'active' : '' ?>">
-                📈 Laporan
+            <a href="/admin/report" class="nav-item <?= str_contains(current_url(),'admin/report') ? 'active' : '' ?>">
+                📈 report
             </a>
             <a href="/logout" class="nav-item" style="margin-top:1rem; color: #7a3030;">
                 ↩ Keluar

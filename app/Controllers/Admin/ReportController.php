@@ -18,7 +18,7 @@ class ReportController extends BaseController
         $fineModel = new FineModel();
 
         $data = [
-            'title'        => 'Laporan',
+            'title'        => 'report',
             'loansByMonth' => $loanModel->getLoansByMonth(12),
             'topBooks'     => $bookModel->getMostBorrowed(10),
             'topMembers'   => $userModel->getMostActive(10),

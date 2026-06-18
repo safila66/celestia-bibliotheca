@@ -568,7 +568,8 @@ header, nav, .navbar {
       </div>
 
       <div class="swiper-slide">
-        <a href="<?= base_url('assets/pdfs/The Song of Achilles - Miller_Madeline.pdf') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+        <a href="<?= base_url('book/detail/1') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
+        <a href="<?= base_url('book/detail/1') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a> 
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/the-song-of-achilles-revpng.png.png') ?>');"></div>
         
         <div class="hero-content">
@@ -583,7 +584,8 @@ header, nav, .navbar {
       </div>
 
       <div class="swiper-slide">
-         <a href="<?= base_url('buku/2') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+        <a href="<?= base_url('book/detail/2') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
+        <a href="<?= base_url('book/detail/2') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/babel.png') ?>');"></div>
         
         <div class="hero-content">
@@ -598,7 +600,8 @@ header, nav, .navbar {
       </div>
 
       <div class="swiper-slide">
-         <a href="<?= base_url('buku/3') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+        <a href="<?= base_url('book/detail/3') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
+        <a href="<?= base_url('book/detail/3') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/capitol-marx.png') ?>');"></div>
         
         <div class="hero-content">
@@ -613,7 +616,8 @@ header, nav, .navbar {
       </div>
 
       <div class="swiper-slide">
-         <a href="<?= base_url('buku/4') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
+         <a href="<?= base_url('book/detail/4') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
+         <a href="<?= base_url('book/detail/4') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/white-nights.png') ?>');"></div>
         
         <div class="hero-content">

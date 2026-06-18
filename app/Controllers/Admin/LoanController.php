@@ -5,7 +5,6 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\LoanModel;
 use App\Models\BookModel;
-use App\Models\FineModel;
 
 class LoanController extends BaseController
 {
@@ -20,97 +19,65 @@ class LoanController extends BaseController
 
     public function index()
     {
-        $status = $this->request->getGet('status') ?? 'all';
-
         $data = [
-            'title'  => 'Manajemen Peminjaman',
-            'loans'  => $this->loanModel->getAllLoans($status),
-            'status' => $status,
-            'counts' => [
-                'all'      => $this->loanModel->countAll(),
-                'pending'  => $this->loanModel->where('status','pending')->countAllResults(),
-                'approved' => $this->loanModel->where('status','approved')->countAllResults(),
-                'returned' => $this->loanModel->where('status','returned')->countAllResults(),
-                'overdue'  => $this->loanModel->getOverdueLoans(true),
-            ],
+            'title' => 'Sirkulasi Peminjaman',
+            // Ini akan memanggil fungsi getAllLoans() yang baru kita buat di Model
+            'loans' => $this->loanModel->getAllLoans() 
         ];
+
         return view('admin/loans/index', $data);
     }
+    public function getData()
+{
+    // Panggil koneksi database
+    $db = \Config\Database::connect();
+    
+    // Asumsi tabel kamu bernama 'loans', 'users' (untuk anggota), dan 'books'
+    // Silakan sesuaikan nama tabel dan kolom dengan yang ada di phpMyAdmin kamu!
+    $builder = $db->table('loans');
+    $builder->select('loans.id, users.name as peminjam, books.title as judul_buku, loans.tanggal_pinjam, loans.status');
+    $builder->join('users', 'users.id = loans.user_id');
+    $builder->join('books', 'books.id = loans.book_id');
+    $builder->orderBy('loans.tanggal_pinjam', 'DESC');
+    $query = $builder->get();
 
+    // Kembalikan data dalam bentuk JSON
+    return $this->response->setJSON([
+        'status' => 'success',
+        'data' => $query->getResult()
+    ]);
+}
+    // Fungsi untuk Pustakawan Menyetujui Peminjaman
     public function approve($id)
     {
-        $loan = $this->loanModel->find($id);
-        if (! $loan || $loan['status'] !== 'pending') {
-            return redirect()->to('/admin/peminjaman')->with('error', 'Permintaan tidak valid.');
-        }
-
-        // Kurangi stok
-        $this->bookModel->decrementStock($loan['book_id']);
-
         $this->loanModel->update($id, [
-            'status'        => 'approved',
-            'approved_date' => date('Y-m-d'),
+            'status'      => 'active',
+            'approved_by' => session()->get('user_id'),
+            'borrow_date' => date('Y-m-d'),
+            'due_date'    => date('Y-m-d', strtotime('+14 days')) // Durasi pinjam 14 hari
         ]);
 
-        return redirect()->to('/admin/peminjaman')->with('success', 'Peminjaman disetujui.');
+        return redirect()->back()->with('success', 'Buku berhasil dipinjamkan ke Scholar.');
     }
 
-    public function reject($id)
+    // Fungsi untuk Menyelesaikan Peminjaman (Buku Dikembalikan)
+    public function complete($id)
     {
         $loan = $this->loanModel->find($id);
-        if (! $loan || $loan['status'] !== 'pending') {
-            return redirect()->to('/admin/peminjaman')->with('error', 'Permintaan tidak valid.');
+        
+        if ($loan) {
+            // Menambah kembali stok buku yang dikembalikan
+            $book = $this->bookModel->find($loan['book_id']);
+            if ($book) {
+                $this->bookModel->update($loan['book_id'], [
+                    'stock_available' => $book['stock_available'] + 1
+                ]);
+            }
+            
+            // Ubah status menjadi returned
+            $this->loanModel->update($id, ['status' => 'returned']);
         }
 
-        $this->loanModel->update($id, ['status' => 'rejected']);
-        return redirect()->to('/admin/peminjaman')->with('success', 'Peminjaman ditolak.');
-    }
-
-    public function returnBook($id)
-    {
-        $loan = $this->loanModel->find($id);
-        if (! $loan || $loan['status'] !== 'approved') {
-            return redirect()->to('/admin/peminjaman')->with('error', 'Data peminjaman tidak valid.');
-        }
-
-        $returnDate = date('Y-m-d');
-        $dueDate    = $loan['due_date'];
-        $fine       = 0;
-
-        // Hitung denda jika terlambat (Rp 2.000/hari)
-        if ($returnDate > $dueDate) {
-            $days  = (int) ceil((strtotime($returnDate) - strtotime($dueDate)) / 86400);
-            $fine  = $days * 2000;
-
-            $fineModel = new FineModel();
-            $fineModel->save([
-                'loan_id'  => $id,
-                'user_id'  => $loan['user_id'],
-                'amount'   => $fine,
-                'status'   => 'unpaid',
-            ]);
-        }
-
-        // Kembalikan stok
-        $this->bookModel->incrementStock($loan['book_id']);
-
-        $this->loanModel->update($id, [
-            'status'      => 'returned',
-            'return_date' => $returnDate,
-        ]);
-
-        $msg = 'Buku berhasil dikembalikan.';
-        if ($fine > 0) $msg .= " Denda: Rp " . number_format($fine, 0, ',', '.');
-
-        return redirect()->to('/admin/peminjaman')->with('success', $msg);
-    }
-
-    public function deliveryQueue()
-    {
-        $data = [
-            'title'    => 'Antrian Book Delivery',
-            'deliveries' => $this->loanModel->getDeliveryQueue(),
-        ];
-        return view('admin/loans/delivery', $data);
+        return redirect()->back()->with('success', 'Buku telah kembali ke rak.');
     }
 }

@@ -9,53 +9,57 @@ class AuthController extends BaseController
     protected UserModel $userModel;
     protected $helpers = ['form'];
 
-    public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
-    {
-        parent::initController($request, $response, $logger);
-        $this->userModel = new UserModel();
-    }
-
     public function __construct()
     {
         $this->userModel = new UserModel();
     }
 
-    // ── Tampilkan form login ──
+    public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    {
+        parent::initController($request, $response, $logger);
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // 1. BAGIAN LOGIN
+    // ══════════════════════════════════════════════════════════
     public function login()
     {
         if (session()->get('user_id')) {
             return $this->redirectByRole();
         }
-        return view('auth/login', ['title' => 'Masuk']);
+        return view('auth/login', ['title' => 'Masuk ke Arsip']);
     }
 
-   // ── Proses login ──
-public function processLogin()
+    public function processLogin()
     {
         $rules = [
             'email'    => 'required|valid_email',
-            'password' => 'required|min_length[6]',
+            'password' => 'required',
         ];
+        
         $messages = [
             'email'    => ['required' => 'Email wajib diisi.', 'valid_email' => 'Format email tidak valid.'],
-            'password' => ['required' => 'Kata sandi wajib diisi.', 'min_length' => 'Kata sandi minimal 6 karakter.'],
+            'password' => ['required' => 'Kata sandi / NIM wajib diisi.'],
         ];
 
         if (!$this->validate($rules, $messages)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        // Cari user berdasarkan email di database
         $user = $this->userModel->where('email', $this->request->getPost('email'))->first();
 
+        // Verifikasi Email dan Password (Atau NIM khusus Admin)
         if (!$user || !password_verify($this->request->getPost('password'), $user['password'])) {
-            return redirect()->back()->withInput()->with('error', 'Email atau kata sandi salah.');
+            return redirect()->back()->withInput()->with('error', 'Akses ditolak! Email atau Sandi salah.');
         }
 
+        // Cek status aktif
         if ($user['status'] !== 'active') {
-            return redirect()->back()->withInput()->with('error', 'Akun Anda tidak aktif. Hubungi administrator.');
+            return redirect()->back()->withInput()->with('error', 'Kunci arsipmu tidak aktif. Hubungi Head Librarian.');
         }
 
-        // Set session
+        // Buat Sesi Login
         session()->set([
             'user_id'    => $user['id'],
             'user_name'  => $user['name'],
@@ -64,25 +68,20 @@ public function processLogin()
             'logged_in'  => true,
         ]);
 
-        // Redirect ke URL sebelumnya jika ada
-        $redirectUrl = session()->get('redirect_url') ?? null;
-        session()->remove('redirect_url');
-
-        if ($redirectUrl) {
-            return redirect()->to($redirectUrl)->with('success', 'Selamat datang, ' . $user['full_name'] . '!');
-        }
-        
-        return $this->redirectByRole()->with('success', 'Login berhasil! Selamat datang kembali di Bibliotheca Stellarum.');
+        return $this->redirectByRole()->with('success', 'Selamat datang kembali di Bibliotheca Stellarum, ' . $user['name'] . '!');
     }
 
-    // ── Tampilkan form register ──
+    // ══════════════════════════════════════════════════════════
+    // 2. BAGIAN REGISTER
+    // ══════════════════════════════════════════════════════════
     public function register()
     {
-        if (session()->get('user_id')) return redirect()->to('/');
-        return view('auth/register', ['title' => 'Daftar Anggota']);
+        if (session()->get('user_id')) {
+            return $this->redirectByRole();
+        }
+        return view('auth/register', ['title' => 'Daftar Arsip']);
     }
 
-    // ── Proses register ──
     public function processRegister()
     {
         $rules = [
@@ -92,62 +91,71 @@ public function processLogin()
             'phone'                 => 'required|max_length[15]',
             'password'              => 'required|min_length[6]',
             'password_confirmation' => 'required|matches[password]',
-            'role'                  => 'required|in_list[member,admin]' // Validasi Pilihan Role
+            'role'                  => 'required|in_list[member,admin]' 
         ];
         
-        $messages = [
-            'name'                  => ['required' => 'Nama wajib diisi.'],
-            'email'                 => ['required' => 'Email wajib diisi.', 'valid_email' => 'Format email tidak valid.', 'is_unique' => 'Email sudah terdaftar.'],
-            'password'              => ['required' => 'Kata sandi wajib diisi.', 'min_length' => 'Kata sandi minimal 6 karakter.'],
-            'password_confirmation' => ['required' => 'Konfirmasi kata sandi wajib diisi.', 'matches' => 'Konfirmasi kata sandi tidak cocok.'],
-            'address'               => ['required' => 'Alamat wajib diisi.', 'max_length' => 'Alamat maksimal 255 karakter.'],
-            'phone'                 => ['required' => 'Nomor telepon wajib diisi.', 'max_length' => 'Nomor telepon maksimal 15 karakter.'],
-            'role'                  => ['required' => 'Peran (Role) wajib dipilih.', 'in_list' => 'Pilihan peran tidak valid.']
-        ];
-
-        if (!$this->validate($rules, $messages)) {
+        if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-       // Menyimpan data termasuk Role yang dipilih ke phpMyAdmin
+        $role     = $this->request->getPost('role');
+        $email    = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+
+        // 🛡️ MANTRA PELINDUNG ADMIN: WHITELIST EMAIL & NIM 🛡️
+        if ($role === 'admin') {
+            
+            // ⬇️ UBAH DENGAN EMAIL & NIM KELOMPOKMU ⬇️
+            $allowedAdmins = [
+                'safila.mutiara.fani-2024@fisip.unair.ac.id'    => '177241065',
+                'eileen.calya.ifthara-2024@fisip.unair.ac.id' => '177241041',
+                'sallendra.aldina.adjie-2024@fisip.unair.ac.id' => '177241060'
+            ];
+
+            if (!array_key_exists($email, $allowedAdmins)) {
+                return redirect()->back()->withInput()->with('error', 'Akses ditolak! Email tidak dikenali sebagai Librarian kelompok.');
+            }
+
+            if ($password !== $allowedAdmins[$email]) {
+                return redirect()->back()->withInput()->with('error', 'Akses ditolak! Sandi Librarian harus berupa NIM yang sesuai.');
+            }
+        }
+
+        // Simpan Data
         $this->userModel->insert([
-            // UBAH 'name' MENJADI 'full_name' AGAR COCOK DENGAN DATABASE
-            'full_name' => $this->request->getPost('name'), 
-            'email'     => $this->request->getPost('email'),
+            'name'      => $this->request->getPost('name'), 
+            'email'     => $email,
             'address'   => $this->request->getPost('address'),
             'phone'     => $this->request->getPost('phone'),
-            'password'  => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role'      => $this->request->getPost('role'), 
+            'password'  => password_hash($password, PASSWORD_DEFAULT),
+            'role'      => $role, 
             'status'    => 'active',
         ]);
 
-        // Ambil data user yang baru saja dibuat
-        $user = $this->userModel->findByEmail($this->request->getPost('email'));
+        $user = $this->userModel->where('email', $email)->first();
         
-        // Langsung buatkan sesi login
         session()->set([
             'user_id'    => $user['id'],
-            // UBAH JUGA DI SINI: $user['name'] MENJADI $user['full_name']
             'user_name'  => $user['name'], 
             'user_email' => $user['email'],
             'user_role'  => $user['role'],
             'logged_in'  => true,
         ]);
-        return $this->redirectByRole()->with('success', 'Registrasi berhasil! Kunci arsip telah ditempa. Selamat datang di Bibliotheca Stellarum.');
+
+        return $this->redirectByRole()->with('success', 'Registrasi berhasil! Kunci arsip telah ditempa.');
     }
 
-    // ── Logout ──
+    // ══════════════════════════════════════════════════════════
+    // 3. LOGOUT & HELPER
+    // ══════════════════════════════════════════════════════════
     public function logout()
     {
         session()->destroy();
         return redirect()->to('/login')->with('success', 'Anda telah berhasil keluar dari Bibliotheca Stellarum.');
     }
 
-    // ── Helper Redirect ──
     private function redirectByRole()
     {
-        return session()->get('user_role') === 'admin'
-            ? redirect()->to('/admin')
-            : redirect()->to('/');
+        return session()->get('user_role') === 'admin' ? redirect()->to('/admin') : redirect()->to('/');
     }
 }

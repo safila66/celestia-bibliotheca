@@ -49,6 +49,23 @@ class BookModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    // Fungsi ini dipanggil secara rahasia oleh AJAX
+    public function ajaxTable()
+    {
+        // Ambil pencarian jika ada
+        $keyword  = $this->request->getGet('q');
+        $category = $this->request->getGet('kategori');
+
+        $data = [
+            // Ambil data buku dari model
+            'books' => $this->bookModel->search($keyword, $category)
+        ];
+
+        // MENGEMBALIKAN POTONGAN HTML (Tidak memuat template header/sidebar admin lagi)
+        return view('admin/books/_table', $data);
+    }
+
+
     // ════════════════════════════════════════════
     //   ADDED FUNCTIONS (CUSTOM METHODS)
     // ════════════════════════════════════════════
@@ -82,8 +99,44 @@ class BookModel extends Model
 
     public function getMostBorrowed($limit = 5)
     {
-        // Menampilkan 5 buku urutan teratas (sebagai pengganti fitur most borrowed)
+        // Menampilkan 5 buku urutan teratas (sebagai pengganti fitur most loaned)
         return $this->orderBy('id', 'DESC')->findAll($limit);
+    }
+
+// ══════════════════════════════════════════════════════════
+    // FUNGSI PENCARIAN BUKU (Untuk Admin & User)
+    // ══════════════════════════════════════════════════════════
+    public function search($keyword = null, $category = null)
+    {
+        // Hubungkan (Join) ke tabel categories agar kita bisa melihat nama kategorinya
+        $this->select('books.*, categories.name as category_name')
+             ->join('categories', 'categories.id = books.category_id', 'left');
+
+        // Jika ada pencarian kata kunci (keyword)
+        if (!empty($keyword)) {
+            $this->groupStart()
+                 ->like('books.title', $keyword)
+                 ->orLike('books.author', $keyword)
+                 ->orLike('books.isbn', $keyword)
+                 ->orLike('books.publisher', $keyword)
+                 ->groupEnd();
+        }
+
+        // Jika ada filter berdasarkan kategori DDC
+        if (!empty($category)) {
+            // Bisa mencari berdasarkan ID Kategori atau Slug Kategori
+            if (is_numeric($category)) {
+                $this->where('books.category_id', $category);
+            } else {
+                $this->where('categories.slug', $category);
+            }
+        }
+
+        // Urutkan dari buku yang paling baru ditambahkan
+        $this->orderBy('books.created_at', 'DESC');
+
+        // Kembalikan semua hasilnya
+        return $this->findAll();
     }
 
 }

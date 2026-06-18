@@ -3,47 +3,57 @@
 namespace App\Controllers;
 
 use App\Models\BookModel;
-use App\Models\CategoriesModel;
+use App\Models\CategoryModel;
 use App\Models\LoanModel;
 use App\Models\WishlistModel;
 use App\Models\UserModel;
 
 class HomeController extends BaseController
 {
-    // Gunakan huruf kecil di awal (camelCase) agar standar dan seragam
     protected $bookModel;
     protected $categoriesModel;
     protected $loanModel;
+    protected $userModel;
 
     public function __construct()
     {
         $this->bookModel       = new BookModel();
-        $this->categoriesModel = new CategoriesModel();
+        $this->categoriesModel = new CategoryModel();
         $this->loanModel       = new LoanModel();
+        $this->userModel       = new UserModel();
     }
 
     // ─── Beranda & Dashboard ─────────────────────────────────
     public function index()
     {
+        // GABUNGKAN SEMUA DATA MENJADI SATU WADAH
         $data = [
-            'title'        => 'Bibliotheca Stellarum',
-            'featured'     => $this->bookModel->getFeatured(8),
-            'categories'   => $this->categoriesModel->findAll(),
-            'newArrivals'  => $this->bookModel->getNewArrivals(4),
+            'title'         => 'Celestia Bibliotheca',
+            
+            // 1. Hitung Angka Statistik Asli (Bukan Dummy)
+            'total_buku'    => $this->bookModel->countAllResults(), 
+            'total_anggota' => $this->userModel->where('role', 'member')->countAllResults(),
+            'total_layanan' => 8, // Tetap 8 karena layout UI grid layananmu ada 8
+            
+            // 2. Ambil Kategori DDC 000-900 Asli untuk Carousel Bintang
+            'categories'    => $this->categoriesModel->findAll(),
+            
+            // 3. Ambil Koleksi Buku Asli
+            'newArrivals'   => $this->bookModel->orderBy('created_at', 'DESC')->findAll(4),
         ];
 
         // ── LOGIKA PERCABANGAN HALAMAN ──
-        // Mengecek apakah ada data 'user_id' di dalam sesi (tanda user sudah login)
         if (session()->get('user_id')) {
-            // Tampilkan Dashboard khusus Anggota
+            // Jika User Sudah Login -> Tampilkan Dashboard
             return view('user/dashboard', $data);
         } else {
-            // Tampilkan Landing Page animasi Goddess (Halaman Public)
-            return view('user/home', $data);
+            // Jika User Belum Login -> Tampilkan Landing Page (Halaman Luar)
+            // Catatan: Pastikan file landing page-mu bernama 'home.php' atau 'index.php' di dalam folder Views/user/
+            return view('user/home', $data); 
         }
     }
 
-    // ─── catalog ─────────────────────────────────────────────
+    // ─── Catalog ─────────────────────────────────────────────
     public function catalog()
     {
         $keyword  = $this->request->getGet('q');
@@ -53,7 +63,7 @@ class HomeController extends BaseController
         $books = $this->bookModel->search($keyword, $category, 12);
 
         $data = [
-            'title'      => 'catalog Koleksi',
+            'title'      => 'Catalog Koleksi',
             'books'      => $books,
             'categories' => $this->categoriesModel->findAll(),
             'keyword'    => $keyword,
@@ -93,7 +103,6 @@ class HomeController extends BaseController
     {
         $userId = session()->get('user_id');
         
-        // PERBAIKAN: Gunakan bookModel untuk mencari buku, bukan loanModel
         $book = $this->bookModel->find($id);
 
         if (! $book) return redirect()->back()->with('error', 'Buku tidak ditemukan.');
@@ -110,7 +119,7 @@ class HomeController extends BaseController
             'due_date'  => date('Y-m-d', strtotime('+14 days')),
         ]);
 
-        return redirect()->to('/peminjaman-saya')->with('success', 'Permintaan peminjaman dikirim. Tunggu persetujuan pustakawan.');
+        return redirect()->to('/loan-saya')->with('success', 'Permintaan loan dikirim. Tunggu persetujuan pustakawan.');
     }
 
     // ─── Wishlist ─────────────────────────────────────────────
@@ -150,10 +159,9 @@ class HomeController extends BaseController
     public function profile()
     {
         $userId    = session()->get('user_id');
-        $userModel = new UserModel();
         $data = [
             'title' => 'Profil Saya',
-            'user'  => $userModel->find($userId),
+            'user'  => $this->userModel->find($userId),
             'stats' => $this->loanModel->getUserStats($userId),
         ];
         return view('user/profile', $data);
@@ -161,8 +169,7 @@ class HomeController extends BaseController
 
     public function updateProfile()
     {
-        $userId    = session()->get('user_id');
-        $userModel = new UserModel();
+        $userId = session()->get('user_id');
 
         $rules = [
             'name'  => 'required|min_length[3]',
@@ -182,7 +189,7 @@ class HomeController extends BaseController
             $data['password'] = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
         }
 
-        $userModel->update($userId, $data);
+        $this->userModel->update($userId, $data);
         session()->set('user_name', $data['name']);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');

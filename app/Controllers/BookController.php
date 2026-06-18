@@ -26,7 +26,6 @@ class BookController extends BaseController
         }
         
         // 2. MUNCULKAN HALAMAN FLIPBOOK (Bukan JSON)
-        // Pastikan file app/Views/book_detail.php sudah ada
-        return view('book_detail', $data);
+        return view('user/bookdetail', $data);
     }
 }

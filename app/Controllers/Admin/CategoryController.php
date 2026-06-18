@@ -7,7 +7,16 @@ use App\Models\CategoryModel;
 
 class CategoryController extends BaseController
 {
-    public function index()
+    public function table()
+{
+    $categoryModel = new \App\Models\CategoryModel();
+    $data = [
+        'categories' => $categoryModel->withBookCount() // Pakai fungsi yang baru kita perbaiki tadi
+    ];
+    return view('admin/categories/table', $data); // Memanggil file table.php
+}
+
+public function index()
     {
         $categoryModel = new CategoryModel();
         $data = [

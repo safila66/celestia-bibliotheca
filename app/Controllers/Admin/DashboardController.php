@@ -18,10 +18,17 @@ class DashboardController extends BaseController
         $fineModel = new FineModel();
 
         $data = [
-            'title'          => 'Dashboard',
-            'totalBooks'     => $bookModel->countAll(),
-            'totalMembers'   => $userModel->where('role', 'user')->countAllResults(),
-            'activeLoans'    => $loanModel->where('status', 'approved')->countAllResults(),
+            'title'          => 'Dashboard | Celestia Bibliotheca',
+            
+            // Menggunakan countAllResults() agar lebih akurat jika menggunakan Soft Deletes
+            'totalBooks'     => $bookModel->countAllResults(),
+            
+            // ⬇️ PERBAIKAN 1: Ganti 'user' menjadi 'member'
+            'totalMembers'   => $userModel->where('role', 'member')->countAllResults(),
+            
+            // ⬇️ PERBAIKAN 2: Ganti 'approved' menjadi 'active' sesuai database-mu
+            'activeLoans'    => $loanModel->where('status', 'active')->countAllResults(),
+            
             'pendingLoans'   => $loanModel->where('status', 'pending')->countAllResults(),
             'unpaidFines'    => $fineModel->where('status', 'unpaid')->countAllResults(),
             'recentLoans'    => $loanModel->getRecentLoans(8),

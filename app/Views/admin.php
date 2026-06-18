@@ -33,13 +33,13 @@
         <a href="<?= base_url('admin') ?>" class="<?= current_url() === base_url('admin') || current_url() === base_url('admin/') ? 'active' : '' ?>">
           <span class="nav-icon">⊕</span> Dasbor
         </a>
-        <a href="<?= base_url('admin/koleksi') ?>" class="<?= str_contains(current_url(), '/admin/koleksi') ? 'active' : '' ?>">
+        <a href="<?= base_url('admin/books') ?>" class="<?= str_contains(current_url(), '/admin/books') ? 'active' : '' ?>">
           <span class="nav-icon">☉</span> catalog Koleksi
         </a>
-        <a href="<?= base_url('admin/koleksi/tambah') ?>" class="<?= current_url() === base_url('admin/koleksi/tambah') ? 'active' : '' ?>">
+        <a href="<?= base_url('admin/books/tambah') ?>" class="<?= current_url() === base_url('admin/books/tambah') ? 'active' : '' ?>">
           <span class="nav-icon">✦</span> Tambah Koleksi
         </a>
-        <a href="<?= base_url('admin/peminjaman') ?>" class="<?= str_contains(current_url(), '/admin/peminjaman') ? 'active' : '' ?>">
+        <a href="<?= base_url('admin/loan') ?>" class="<?= str_contains(current_url(), '/admin/loan') ? 'active' : '' ?>">
           <span class="nav-icon">◈</span> Peminjaman
           <?php if ($pendingCount > 0): ?>
             <span style="margin-left:auto;background:var(--gold);color:var(--navy);font-size:9px;padding:2px 6px;border-radius:10px;font-family:'Cinzel',serif;font-weight:700"><?= $pendingCount ?></span>
@@ -51,7 +51,7 @@
     <div class="sidebar-section">
       <span class="sidebar-section-label">Anggota & Kategori</span>
       <nav class="sidebar-nav">
-        <a href="<?= base_url('admin/anggota') ?>" class="<?= str_contains(current_url(), '/admin/anggota') ? 'active' : '' ?>">
+        <a href="<?= base_url('admin/users') ?>" class="<?= str_contains(current_url(), '/admin/users') ? 'active' : '' ?>">
           <span class="nav-icon">☽</span> Daftar Anggota
         </a>
         <a href="<?= base_url('admin/kategori') ?>" class="<?= str_contains(current_url(), '/admin/kategori') ? 'active' : '' ?>">
@@ -61,10 +61,10 @@
     </div>
 
     <div class="sidebar-section">
-      <span class="sidebar-section-label">Laporan</span>
+      <span class="sidebar-section-label">report</span>
       <nav class="sidebar-nav">
-        <a href="<?= base_url('admin/laporan') ?>" class="<?= str_contains(current_url(), '/admin/laporan') ? 'active' : '' ?>">
-          <span class="nav-icon">☀</span> Statistik & Laporan
+        <a href="<?= base_url('admin/report') ?>" class="<?= str_contains(current_url(), '/admin/report') ? 'active' : '' ?>">
+          <span class="nav-icon">☀</span> Statistik & report
         </a>
       </nav>
     </div>
@@ -98,7 +98,7 @@
       </div>
       <div class="topbar-right">
         <?php if ($pendingCount > 0): ?>
-          <a href="<?= base_url('admin/peminjaman?status=pending') ?>" class="topbar-btn" title="<?= $pendingCount ?> peminjaman pending" style="position:relative">
+          <a href="<?= base_url('admin/loan?status=pending') ?>" class="topbar-btn" title="<?= $pendingCount ?> loan pending" style="position:relative">
             🔔
             <span style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:var(--gold);border-radius:50%;font-size:8px;color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'Cinzel',serif"><?= $pendingCount ?></span>
           </a>

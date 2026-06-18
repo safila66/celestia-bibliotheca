@@ -58,14 +58,19 @@
     <h2 class="auth-title">REGISTER</h2>
     <p class="auth-subtitle">Your Name Engraved Herein.</p>
 
-    <?php if(session()->getFlashdata('errors')): ?>
-        <div style="color: #ff6b6b; font-size: 13px; margin-bottom: 15px; border: 1px solid #ff6b6b; padding: 10px; background: rgba(220,53,69,0.1);">
-            <?php foreach(session()->getFlashdata('errors') as $error): ?>
-                ✗ <?= esc($error) ?><br>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+   <?php if(session()->getFlashdata('errors')): ?>
+    <div style="color: #ff6b6b; font-size: 13px; margin-bottom: 15px; border: 1px solid #ff6b6b; padding: 10px; background: rgba(220,53,69,0.1);">
+        <?php foreach(session()->getFlashdata('errors') as $error): ?>
+            ✗ <?= esc($error) ?><br>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
 
+<?php if(session()->getFlashdata('error')): ?>
+    <div style="color: #ff6b6b; font-size: 13px; margin-bottom: 15px; border: 1px solid #ff6b6b; padding: 10px; background: rgba(220,53,69,0.1);">
+        ✗ <?= esc(session()->getFlashdata('error')) ?>
+    </div>
+<?php endif; ?>
     <form action="<?= base_url('register/process') ?>" method="post">
         <?= csrf_field() ?>
         
@@ -108,13 +113,17 @@
             <input type="text" name="phone" class="form-control" value="<?= set_value('phone') ?>" required>
         </div>
 
-        <div class="form-group">
-            <label>Choose Your Path (Role)</label>
-            <select name="role" class="form-control" required>
-                <option value="member" style="color: black;">Scholar (Member)</option>
-                <option value="admin" style="color: black;">Librarian (Admin)</option>
-            </select>
-        </div>
+        <!-- Dropdown Pemilihan Role -->
+    <div class="form-group">
+         <label>CHOOSE YOUR PATH (ROLE)</label>
+          <select name="role" id="roleSelect" class="form-control">
+        <option value="member">Scholar (Member)</option>
+        <option value="admin">Librarian (Admin)</option>
+    </select>
+    <small style="color: var(--text-dim); font-size: 11px; font-style: italic; margin-top: 5px; display: block;">
+        *only admin can access the Librarian role. If you are a Scholar, please select the Member role.
+    </small>
+</div>
         
         <button type="submit" class="btn-submit">Forge Your Key</button>
     </form>

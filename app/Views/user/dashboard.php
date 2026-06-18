@@ -159,7 +159,7 @@
         <h1 class="hero-title">Bibliotheca<br>Stellarum</h1>
         <p class="hero-subtitle">Ad astra per libros — Menuju bintang melalui buku</p>
 
-        <form action="/catalog" method="get" class="hero-search">
+        <form action="/katalog" method="get" class="hero-search">
             <input type="text" name="q" placeholder="Cari judul, pengarang, atau ISBN...">
             <button type="submit">TELUSURI →</button>
         </form>
@@ -185,7 +185,7 @@
 <section class="section">
     <div class="section-header-flex">
         <div class="section-title-main">✦ Koleksi Unggulan</div>
-        <a href="/catalog" class="section-link">Lihat semua →</a>
+        <a href="/katalog" class="section-link">Lihat semua →</a>
     </div>
 
     <div class="book-grid">
@@ -228,7 +228,7 @@
     <div class="cat-grid">
         <?php if (!empty($categories)): ?>
             <?php foreach ($categories as $cat): ?>
-            <a href="/catalog?kategori=<?= $cat['id'] ?>" class="cat-card" style="text-decoration:none">
+            <a href="/katalog?kategori=<?= $cat['id'] ?>" class="cat-card" style="text-decoration:none">
                 <div class="cat-icon"><?= $cat['icon'] ?? '📚' ?></div>
                 <div class="cat-name"><?= esc($cat['name']) ?></div>
             </a>
@@ -291,7 +291,7 @@
         ✦ Akses Penuh untuk Anggota
     </div>
     <p style="color:var(--muted); font-size:.9rem; margin-bottom:1.5rem;">
-        Login untuk mengakses peminjaman, book delivery, room booking, dan layanan lainnya.
+        Login untuk mengakses loan, book delivery, room booking, dan layanan lainnya.
     </p>
     <a href="/login" style="font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.1em; padding:.7rem 2rem; border:1px solid var(--gold-dim); color:var(--gold); border-radius:2px; margin-right:.75rem;">
         MASUK

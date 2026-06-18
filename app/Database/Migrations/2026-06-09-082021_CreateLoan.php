@@ -14,7 +14,7 @@ class CreateLoanTable extends Migration
             'user_id'     => ['type' => 'INT', 'unsigned' => true],
             'book_id'     => ['type' => 'INT', 'unsigned' => true],
             'approved_by' => ['type' => 'INT', 'unsigned' => true, 'null' => true],
-            'borrow_date' => ['type' => 'DATE'],
+            'loan_date' => ['type' => 'DATE'],
             'due_date'    => ['type' => 'DATE'],
             'return_date' => ['type' => 'DATE', 'null' => true],
             'status'      => ['type' => 'ENUM', 'constraint' => ['pending','active','returned','overdue','rejected'], 'default' => 'pending'],

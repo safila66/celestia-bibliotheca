@@ -17,6 +17,9 @@ class BookController extends BaseController
         $this->categoryModel = new CategoryModel();
     }
 
+    // ══════════════════════════════════════════════════════════
+    // 1. TAMPILAN TABEL UTAMA
+    // ══════════════════════════════════════════════════════════
     public function index()
     {
         $keyword  = $this->request->getGet('q');
@@ -29,114 +32,128 @@ class BookController extends BaseController
             'keyword'    => $keyword,
             'category'   => $category,
         ];
+        
         return view('admin/books/index', $data);
     }
 
-    public function create()
+    // ══════════════════════════════════════════════════════════
+    // 2. FUNGSI TAMBAH BUKU (CREATE)
+    // ══════════════════════════════════════════════════════════
+    public function ajaxCreate()
     {
-        $data = [
-            'title'      => 'Tambah Koleksi',
-            'categories' => $this->categoryModel->findAll(),
-        ];
-        return view('admin/books/form', $data);
+        // Mengambil semua data kategori untuk dropdown pilihan di pop-up
+        $data['categories'] = $this->categoryModel->findAll();
+        return view('admin/books/modal_create', $data);
     }
-
+    
     public function store()
     {
-        $rules = [
-            'title'       => 'required|min_length[3]',
-            'author'      => 'required',
-            'isbn'        => 'permit_empty|is_unique[books.isbn]',
-            'category_id' => 'required|integer',
-            'stock'       => 'required|integer|greater_than_equal_to[0]',
-            'year'        => 'permit_empty|integer',
-        ];
-
-        if (! $this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        // JARING PENGAMAN: Cek apakah kategori dipilih!
+        $categoryId = $this->request->getPost('category_id');
+        if (empty($categoryId)) {
+            return redirect()->to('admin/books')->with('error', 'Gagal menyimpan: Kategori Buku wajib dipilih!');
         }
 
         $cover = $this->handleCoverUpload();
 
+        // Jika aman, simpan ke database
         $this->bookModel->save([
-            'title'       => $this->request->getPost('title'),
-            'author'      => $this->request->getPost('author'),
-            'isbn'        => $this->request->getPost('isbn'),
-            'publisher'   => $this->request->getPost('publisher'),
-            'year'        => $this->request->getPost('year'),
-            'category_id' => $this->request->getPost('category_id'),
-            'description' => $this->request->getPost('description'),
-            'stock'       => $this->request->getPost('stock'),
-            'cover'       => $cover,
+            'call_number'     => $this->request->getPost('call_number'),
+            'isbn'            => $this->request->getPost('isbn'),
+            'title'           => $this->request->getPost('title'),
+            'author'          => $this->request->getPost('author'),
+            'publisher'       => $this->request->getPost('publisher'),
+            'year'            => $this->request->getPost('year'),
+            'stock_available' => $this->request->getPost('stock_available'),
+            'category_id'     => $categoryId, // Masukkan kategori yang sudah dicek
+            'description'     => $this->request->getPost('description'),
+            'cover_image'     => $cover,
         ]);
-
-        return redirect()->to('/admin/koleksi')->with('success', 'Buku berhasil ditambahkan.');
+        
+        return redirect()->to('admin/books')->with('success', 'Volume baru berhasil ditambahkan ke arsip!');
     }
-
-    public function edit($id)
+    // ══════════════════════════════════════════════════════════
+    // 3. FUNGSI EDIT BUKU (UPDATE)
+    // ══════════════════════════════════════════════════════════
+    public function ajaxEdit($id)
     {
-        $book = $this->bookModel->find($id);
-        if (! $book) return redirect()->to('/admin/koleksi')->with('error', 'Buku tidak ditemukan.');
-
-        $data = [
-            'title'      => 'Edit Koleksi',
-            'book'       => $book,
-            'categories' => $this->categoryModel->findAll(),
-        ];
-        return view('admin/books/form', $data);
+        $data['book'] = $this->bookModel->find($id);
+        return view('admin/books/modal_edit', $data);
     }
 
     public function update($id)
     {
         $book = $this->bookModel->find($id);
-        if (! $book) return redirect()->to('/admin/koleksi')->with('error', 'Buku tidak ditemukan.');
+        if (! $book) return redirect()->to('admin/books')->with('error', 'Volume tidak ditemukan.');
 
-        $rules = [
-            'title'       => 'required|min_length[3]',
-            'author'      => 'required',
-            'isbn'        => "permit_empty|is_unique[books.isbn,id,{$id}]",
-            'category_id' => 'required|integer',
-            'stock'       => 'required|integer|greater_than_equal_to[0]',
-        ];
-
-        if (! $this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        $cover = $this->handleCoverUpload() ?? $book['cover'];
+        $cover = $this->handleCoverUpload() ?? $book['cover_image'];
 
         $this->bookModel->update($id, [
-            'title'       => $this->request->getPost('title'),
-            'author'      => $this->request->getPost('author'),
-            'isbn'        => $this->request->getPost('isbn'),
-            'publisher'   => $this->request->getPost('publisher'),
-            'year'        => $this->request->getPost('year'),
-            'category_id' => $this->request->getPost('category_id'),
-            'description' => $this->request->getPost('description'),
-            'stock'       => $this->request->getPost('stock'),
-            'cover'       => $cover,
+            'call_number'     => $this->request->getPost('call_number'),
+            'isbn'            => $this->request->getPost('isbn'),
+            'title'           => $this->request->getPost('title'),
+            'author'          => $this->request->getPost('author'),
+            'publisher'       => $this->request->getPost('publisher'),
+            'year'            => $this->request->getPost('year'),
+            'stock_available' => $this->request->getPost('stock_available'),
+            'description'     => $this->request->getPost('description'),
+            'cover_image'     => $cover,
         ]);
 
-        return redirect()->to('/admin/koleksi')->with('success', 'Buku berhasil diperbarui.');
+        return redirect()->to('admin/books')->with('success', 'Catatan volume berhasil diperbarui.');
     }
 
+    // ══════════════════════════════════════════════════════════
+    // 4. FUNGSI HAPUS BUKU (DELETE)
+    // ══════════════════════════════════════════════════════════
     public function delete($id)
     {
         $book = $this->bookModel->find($id);
-        if (! $book) return redirect()->to('/admin/koleksi')->with('error', 'Buku tidak ditemukan.');
+        if (! $book) return redirect()->to('admin/books')->with('error', 'Volume tidak ditemukan.');
 
         $this->bookModel->delete($id);
-        return redirect()->to('/admin/koleksi')->with('success', 'Buku berhasil dihapus.');
+        
+        return redirect()->to('admin/books')->with('success', 'Volume berhasil dibuang ke tong sampah.');
     }
 
+    // ══════════════════════════════════════════════════════════
+    // 5. TONG SAMPAH BUKU (TRASH, RESTORE, PURGE)
+    // ══════════════════════════════════════════════════════════
+    public function trash()
+    {
+        $data = [
+            'title' => 'Tong Sampah Volume',
+            'books' => $this->bookModel->onlyDeleted()->findAll() 
+        ];
+        
+        return view('admin/books/trash', $data);
+    }
+
+    public function restore($id)
+    {
+        $this->bookModel->update($id, ['deleted_at' => null]);
+        return redirect()->to('admin/book/trash')->with('success', 'Volume berhasil dikembalikan ke arsip utama.');
+    }
+
+    public function purge($id)
+    {
+        $this->bookModel->delete($id, true);
+        return redirect()->to('admin/book/trash')->with('success', 'Volume telah dibumihanguskan selamanya.');
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // HELPER: FUNGSI UPLOAD GAMBAR SAMPUL
+    // ══════════════════════════════════════════════════════════
     private function handleCoverUpload(): ?string
     {
-        $file = $this->request->getFile('cover');
+        $file = $this->request->getFile('cover_image');
+        
         if ($file && $file->isValid() && ! $file->hasMoved()) {
             $newName = $file->getRandomName();
             $file->move(ROOTPATH . 'public/uploads/covers', $newName);
             return $newName;
         }
+        
         return null;
     }
 }

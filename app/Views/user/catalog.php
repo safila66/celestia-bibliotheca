@@ -147,7 +147,8 @@
                     
                     <div class="book-meta">
                         <span style="color: var(--gold); font-size: 11px; letter-spacing: 2px;">★★★★★</span>
-                        <a href="<?= base_url('buku/' . $item['id']) ?>" class="book-btn">Read</a>
+                        
+                        <a href="<?= base_url('book/detail/' . $item['id']) ?>" class="book-btn">Read</a>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -159,6 +160,5 @@
             </div>
         <?php endif; ?>
     </div>
-
 </div>
 <?= $this->endSection() ?>

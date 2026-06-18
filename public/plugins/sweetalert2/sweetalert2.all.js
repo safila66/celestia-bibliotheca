@@ -531,11 +531,11 @@
   };
   const toggle = (elem, condition, display) => {
     condition ? show(elem, display) : hide(elem);
-  }; // borrowed from jquery $(elem).is(':visible') implementation
+  }; // loaned from jquery $(elem).is(':visible') implementation
 
   const isVisible = elem => !!(elem && (elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length));
   const allButtonsAreHidden = () => !isVisible(getConfirmButton()) && !isVisible(getDenyButton()) && !isVisible(getCancelButton());
-  const isScrollable = elem => !!(elem.scrollHeight > elem.clientHeight); // borrowed from https://stackoverflow.com/a/46352119
+  const isScrollable = elem => !!(elem.scrollHeight > elem.clientHeight); // loaned from https://stackoverflow.com/a/46352119
 
   const hasCssAnimation = elem => {
     const style = window.getComputedStyle(elem);

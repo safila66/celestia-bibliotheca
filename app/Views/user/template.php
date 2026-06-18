@@ -210,7 +210,7 @@
                 <div class="nav-avatar"><?= strtoupper(substr(session()->get('user_name'), 0, 2)) ?></div>
                 <div class="dropdown-menu">
                     <a href="/profil" class="dropdown-item">👤 Profil Saya</a>
-                    <a href="/peminjaman-saya" class="dropdown-item">📋 Peminjaman</a>
+                    <a href="/loan-saya" class="dropdown-item">📋 Peminjaman</a>
                     <a href="/daftar-bacaan" class="dropdown-item">⭐ Daftar Bacaan</a>
                     <a href="/logout" class="dropdown-item" style="color:var(--danger)">↩ Keluar</a>
                 </div>

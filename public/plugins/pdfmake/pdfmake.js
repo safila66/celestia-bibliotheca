@@ -66211,7 +66211,7 @@ var GPOSProcessor = /*#__PURE__*/function (_OTProcessor2) {
             return false;
           }
 
-          var _cur = this.glyphIterator.cur; // The following logic was borrowed from Harfbuzz
+          var _cur = this.glyphIterator.cur; // The following logic was loaned from Harfbuzz
 
           var good = false;
 
