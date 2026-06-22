@@ -4,7 +4,7 @@
 
 <div class="page-header">
     <h2>Ringkasan Arsip Stellarum</h2>
-    <a href="<?= base_url('admin/books/tambah') ?>" class="btn btn-primary">
+    <a href="<?= base_url('admin/books') ?>" class="btn btn-primary" title="Buka halaman Manajemen Koleksi lalu klik '+ Tambah Buku'">
         + Tambah Volume Baru
     </a>
 </div>

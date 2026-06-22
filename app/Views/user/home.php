@@ -22,6 +22,7 @@
   }
 
   /* Overlay gelap untuk slide 1 agar teks terbaca */
+<?php if (!session()->get('user_id')): ?>
 .swiper-slide:first-child .slide-bg::before {
   content: '';
   cursor: pointer;
@@ -43,6 +44,21 @@
     transparent 30%
   );
 }
+<?php else: ?>
+.swiper-slide:first-child .slide-bg::before {
+  content: '';
+  cursor: pointer;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  /* Hanya gelap di bawah untuk hero-cards karena teks sudah dihilangkan */
+  background: linear-gradient(
+    to top,
+    rgba(4, 6, 15, 0.85) 0%,
+    transparent 30%
+  );
+}
+<?php endif; ?>
   /* 1. GAMBAR UTAMA (Pastikan ukurannya full dan cerah) */
   .slide-bg {
     position: absolute; 
@@ -118,7 +134,7 @@ header, nav, .navbar {
   .hero-eyebrow {
     display: flex; align-items: center; gap: 18px;
     font-family: 'Raleway', sans-serif; font-size: 11px;
-    letter-spacing: 0.22em; color: var(--navy); text-transform: uppercase;
+    letter-spacing: 0.22em; color: #E8C96A; text-transform: uppercase;
     margin-bottom: 24px;
     text-shadow: 0 4px 24px rgba(0,0,0,0.9);
   }
@@ -131,19 +147,19 @@ header, nav, .navbar {
     font-family: 'Cinzel', serif; 
     font-size: clamp(42px, 6vw, 86px); /* Ini mengembalikan ukuran besar aslinya */
     font-weight: 400; line-height: 1.0; letter-spacing: 0.02em;
-    color: var(--ivory); margin-bottom: 10px;
+    color: #F0EBE0; margin-bottom: 10px;
      text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
   }
   .hero-title span { color: var(--gold-light); }
   .hero-subtitle {
     font-family: 'Cinzel', serif; 
     font-size: clamp(20px, 2.8vw, 36px); /* Kembali lebih besar */
-    font-weight: 400; letter-spacing: 0.06em; color: var(--moon-silver);
+    font-weight: 400; letter-spacing: 0.06em; color: #D4D0C8;
     margin-bottom: 24px; opacity: 100%;
     text-shadow: 0 1px 12px rgba(0,0,0,0.9);
   }
   .hero-desc {
-    font-size: 16px; line-height: 1.75; color: var(--text-light);
+    font-size: 16px; line-height: 1.75; color: rgba(240,235,224,0.85);
     max-width: 480px; margin-bottom: 32px; 
     font-style: italic;
     text-shadow: 0 1px 12px rgba(0,0,0,0.9);
@@ -151,31 +167,27 @@ header, nav, .navbar {
   .hero-cta { display: flex; align-items: center; gap: 24px; }
 
   /* ── QUICK CARDS ── */
-.hero-cards {
-    position: absolute !important; /* Kunci paksa posisi */
-    bottom: 0 !important;          /* Tempel ketat ke bawah */
-    left: 0; 
-    right: 0; 
-    z-index: 30; /* Pastikan selalu di depan */
+  <?php if (!session()->get('user_id')): ?>
+  .hero-cards {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0; right: 0; 
+    z-index: 30;
     display: grid; 
     grid-template-columns: repeat(3, 1fr);
     border-top: 1px solid rgba(201,168,76,0.2);
-    background: transparent; /* Tetap transparan */
+    background: transparent;
   }
-.hero-card {
+  .hero-card {
     padding: 28px 40px; 
-    background: rgba(4, 6, 15, 0.2); /* Transparan gelap sangat tipis */
+    background: rgba(4, 6, 15, 0.2);
     backdrop-filter: blur(0px);
     -webkit-backdrop-filter: blur(0px);
     border-right: 1px solid rgba(201,168,76,0.12);
     cursor: pointer; 
     transition: all 0.3s ease;
   }
-  
-  .hero-card:hover { 
-    background: rgba(201, 168, 76, 0.15); 
-  }
-
+  .hero-card:hover { background: rgba(201, 168, 76, 0.15); }
   .card-eyebrow {
     font-family: 'Raleway', sans-serif; font-size: 10px;
     letter-spacing: 0.2em; text-transform: uppercase;
@@ -183,9 +195,10 @@ header, nav, .navbar {
   }
   .card-title {
     font-family: 'Cinzel', serif; font-size: 15px; font-weight: 600;
-    color: var(--ivory); margin-bottom: 4px;
+    color: #F0EBE0; margin-bottom: 4px;
   }
-  .card-sub { font-size: 13px; color: var(--text-dim); font-style: italic; }
+  .card-sub { font-size: 13px; color: rgba(240,235,224,0.7); font-style: italic; }
+  <?php endif; ?>
 
   /* ── SECTION DIVIDER & HEADERS ── */
   .section-header { text-align: center; padding: 80px 56px 48px; position: relative; z-index: 10; }
@@ -225,35 +238,77 @@ header, nav, .navbar {
   .frame-item image { transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease; filter: drop-shadow(0 0 0px transparent); }
   .frame-item:hover image, .frame-item.active image { opacity: 1 !important; filter: drop-shadow(0 0 12px #E8C96A) drop-shadow(0 0 4px #C9A84C) !important; }
 
-  /* ── COLLECTION GRID ── */
-  #collection { position: relative; z-index: 10; padding: 0 56px 120px; }
-  .collection-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-  .book-card {
-    background: linear-gradient(135deg, rgba(15,18,38,0.9) 0%, rgba(8,10,22,0.95) 100%);
-    border: 1px solid rgba(201,168,76,0.12); padding: 28px 22px 22px; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;
+  /* ── VOLUME SLIDER ── */
+  #collection { position: relative; z-index: 10; padding: 0 0 80px; }
+  .volume-slider-wrap { position: relative; overflow: hidden; }
+  .volume-slider {
+    display: flex; overflow-x: auto; gap: 28px;
+    padding: 20px 56px 40px 56px;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  .book-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
-    opacity: 0; transition: opacity 0.3s;
+  .volume-slider::-webkit-scrollbar { display: none; }
+  .volume-card {
+    scroll-snap-align: center;
+    min-width: 300px; flex: 0 0 300px;
+    background: var(--bg-card, rgba(4,6,15,0.5));
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: 6px;
+    position: relative; overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    display: flex; flex-direction: column;
   }
-  .book-card:hover { border-color: rgba(201,168,76,0.35); transform: translateY(-4px); }
-  .book-card:hover::before { opacity: 1; }
-  .book-cover {
-    width: 100%; aspect-ratio: 2/3; object-fit: cover; margin-bottom: 16px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    display: flex; align-items: center; justify-content: center; font-size: 40px;
+  .volume-card:hover {
+    border-color: rgba(201,168,76,0.5);
+    transform: translateY(-6px);
+    box-shadow: 0 8px 32px rgba(201,168,76,0.1);
   }
-  .book-genre { font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
-  .book-title { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600; color: var(--ivory); margin-bottom: 4px; line-height: 1.3; }
-  .book-author { font-size: 12px; color: var(--text-dim); font-style: italic; margin-bottom: 12px; }
-  .book-meta { display: flex; justify-content: space-between; align-items: center; }
-  .stars { color: var(--gold); font-size: 11px; letter-spacing: 2px; }
-  .book-btn {
-    font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--gold); background: none; border: 1px solid rgba(201,168,76,0.3); padding: 5px 14px; cursor: pointer; transition: all 0.2s; text-decoration: none;
+  .volume-card .vol-cover {
+    width: 100%; height: 180px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+    background: linear-gradient(135deg, rgba(15,18,38,0.3), rgba(201,168,76,0.08));
   }
-  .book-btn:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+  .volume-card .vol-body {
+    padding: 24px 24px 28px;
+  }
+  .volume-card .vol-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 10px; font-weight: 700;
+  }
+  .volume-card .vol-title {
+    font-family: 'Cinzel', serif;
+    font-size: 18px; font-weight: 400;
+    color: var(--ivory); margin-bottom: 8px;
+    line-height: 1.25;
+  }
+  .volume-card .vol-desc {
+    font-size: 13px; line-height: 1.6;
+    color: var(--text-muted, rgba(240,235,224,0.6));
+    font-style: italic;
+  }
+  .volume-arrows {
+    display: flex; align-items: center; justify-content: center;
+    gap: 20px; margin-top: 8px;
+  }
+  .volume-arrows button {
+    background: none; border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold); width: 36px; height: 36px;
+    cursor: pointer; font-size: 16px; transition: all 0.2s;
+  }
+  .volume-arrows button:hover {
+    background: rgba(201,168,76,0.1); border-color: var(--gold);
+  }
+  .volume-arrows span {
+    font-family: 'Raleway', sans-serif; font-size: 12px;
+    letter-spacing: 0.1em; color: var(--text-dim);
+  }
 
   /* ── BOOK PREVIEW MODAL ── */
 .book-modal-overlay {
@@ -495,7 +550,7 @@ header, nav, .navbar {
 
   /* ── SCROLL INDICATOR & COUNTER ── */
   .scroll-hint { 
-    position: absolute; bottom: 105px; left: 56px; 
+    position: absolute; bottom: <?php echo (!session()->get('user_id')) ? '105px' : '40px'; ?>; left: 56px; 
     z-index: 20; display: flex; align-items: center; gap: 10px; 
     font-family: 'Raleway', sans-serif; font-size: 10px; letter-spacing: 0.2em; 
     color: var(--text-dim); text-transform: uppercase; animation: fadeUpDown 2.5s ease-in-out infinite; 
@@ -512,7 +567,7 @@ header, nav, .navbar {
   }
 
   .hero-counter { 
-    position: absolute; bottom: 105px; right: 56px; 
+    position: absolute; bottom: <?php echo (!session()->get('user_id')) ? '105px' : '40px'; ?>; right: 56px; 
     z-index: 20; font-family: 'Raleway', sans-serif; font-size: 12px; 
     letter-spacing: 0.1em; color: var(--text-dim); display: flex; align-items: center; gap: 16px; 
   }
@@ -533,8 +588,10 @@ header, nav, .navbar {
     .hero-title { font-size: 42px; }
     .hero-subtitle { font-size: 20px; }
     .hero-desc { font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
-    .scroll-hint, .hero-counter { bottom: 95px; }
-    .hero-cards .hero-card { padding: 18px 30px; } /* Kartu bawah ikut dikecilkan sedikit */
+    .scroll-hint, .hero-counter { bottom: <?php echo (!session()->get('user_id')) ? '95px' : '20px'; ?>; }
+    <?php if (!session()->get('user_id')): ?>
+    .hero-cards .hero-card { padding: 18px 30px; }
+    <?php endif; ?>
   }
 </style>
 <?= $this->endSection() ?>
@@ -568,7 +625,6 @@ header, nav, .navbar {
       </div>
 
       <div class="swiper-slide">
-        <a href="<?= base_url('book/detail/1') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
         <a href="<?= base_url('book/detail/1') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a> 
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/the-song-of-achilles-revpng.png.png') ?>');"></div>
         
@@ -578,13 +634,12 @@ header, nav, .navbar {
           <p class="hero-subtitle">Fantasy · Vol. I</p>
           <p class="hero-desc">A tale of gods, kings, and immortal fame. Delve into the tragic and beautiful epic of the Trojan War hero.</p>
           <div class="hero-cta">
-            <button onclick="openBookModal(1)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
+            <button onclick="openBookModal(1)" class="btn-primary" style="border:none; cursor:pointer; position:relative; z-index:10;">Read Now</button>
           </div>
         </div>
       </div>
 
       <div class="swiper-slide">
-        <a href="<?= base_url('book/detail/2') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
         <a href="<?= base_url('book/detail/2') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/babel.png') ?>');"></div>
         
@@ -594,13 +649,12 @@ header, nav, .navbar {
           <p class="hero-subtitle">Fantasy · Vol. I</p>
           <p class="hero-desc"> Language is not just communication, but a foundational tool that shapes reality and enforces colonial hierarchies.</p>
           <div class="hero-cta">
-            <button onclick="openBookModal(2)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
+            <button onclick="openBookModal(2)" class="btn-primary" style="border:none; cursor:pointer; position:relative; z-index:10;">Read Now</button>
           </div>
         </div>
       </div>
 
       <div class="swiper-slide">
-        <a href="<?= base_url('book/detail/3') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
         <a href="<?= base_url('book/detail/3') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/capitol-marx.png') ?>');"></div>
         
@@ -610,13 +664,12 @@ header, nav, .navbar {
           <p class="hero-subtitle">Philosophy and Social Theory</p>
           <p class="hero-desc">a critical analysis of political economy, meant to reveal the economic patterns underpinning the capitalist mode of production.</p>
           <div class="hero-cta">
-            <button onclick="openBookModal(3)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
+            <button onclick="openBookModal(3)" class="btn-primary" style="border:none; cursor:pointer; position:relative; z-index:10;">Read Now</button>
           </div>
         </div>
       </div>
 
       <div class="swiper-slide">
-         <a href="<?= base_url('book/detail/4') ?>" class="btn-primary" style="text-decoration:none;">READ NOW</a>
          <a href="<?= base_url('book/detail/4') ?>" style="position:absolute; inset:0; z-index:5; display:block;"></a>
         <div class="slide-bg" style="background-image: url('<?= base_url('assets/images/white-nights.png') ?>');"></div>
         
@@ -626,7 +679,7 @@ header, nav, .navbar {
           <p class="hero-subtitle">Ultimate Timeless Classics</p>
           <p class="hero-desc">“Your hand is cold, mine burns like fire. How blind you are, Nastenka!”</p>
           <div class="hero-cta">
-            <button onclick="openBookModal(4)" class="btn-primary" style="border:none; cursor:pointer;">Read Now</button>
+            <button onclick="openBookModal(4)" class="btn-primary" style="border:none; cursor:pointer; position:relative; z-index:10;">Read Now</button>
           </div>
         </div>
       </div>
@@ -668,6 +721,7 @@ header, nav, .navbar {
     <button class="btn-hero-next">→</button>
   </div>
 
+  <?php if (!session()->get('user_id')): ?>
   <div class="hero-cards">
     <a href="<?= base_url('buku/1') ?>" class="hero-card" style="text-decoration: none; display: block;">
       <div class="card-eyebrow">New Arrival</div>
@@ -687,9 +741,25 @@ header, nav, .navbar {
       <div class="card-sub">Curator's choice · Minor Journalism</div>
     </a>
   </div>
+  <?php endif; ?>
 
 </section>
 
+<!-- ═══════════════════════════════════════════
+     SEARCH BAND (above Constellations)
+════════════════════════════════════════════ -->
+<div class="nebula-band">
+  <h2>Search the Stars</h2>
+  <p>Every star is a story. Find yours.</p>
+  <form action="<?= base_url('catalog') ?>" method="get" style="display:inline-flex; align-items:center;">
+    <input type="text" name="q" placeholder="Title, author, constellation…" />
+    <button type="submit" class="btn-primary">Search</button>
+  </form>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     EXPLORE THE CONSTELLATIONS
+════════════════════════════════════════════ -->
 <section>
   <div class="section-header">
     <div class="divider-rune">✦</div>
@@ -705,42 +775,76 @@ header, nav, .navbar {
   </div>
 </section>
 
+<!-- ═══════════════════════════════════════════
+     FEATURED VOLUMES (Hardcoded Journal Slider)
+════════════════════════════════════════════ -->
 <section>
   <div class="section-header">
     <div class="divider-rune">✦</div>
     <h2>Featured Volumes</h2>
-    <p>Curated from across the celestial archive</p>
+    <p>Curated journals from across the celestial archive</p>
   </div>
   <div id="collection">
-    <div class="collection-grid" id="bookGrid">
-      <?php if (!empty($featured)): ?>
-        <?php foreach ($featured as $buku): ?>
-          <div class="book-card">
-            <div class="book-cover">🌙</div> 
-            <div class="book-genre"><?= esc($buku['kategori'] ?? 'Archive') ?></div>
-            <div class="book-title"><?= esc($buku['title']) ?></div>
-            <div class="book-author"><?= esc($buku['author'] ?? 'Unknown Scholar') ?></div>
-            <div class="book-meta">
-              <span class="stars">★★★★★</span>
-              <a href="<?= base_url('buku/' . $buku['id']) ?>" class="book-btn">Read</a>
+    <div class="volume-slider-wrap">
+      <div class="volume-slider" id="volumeSlider">
+
+        <!-- ODOC -->
+        <a href="<?= base_url('odoc/latest') ?>" style="text-decoration:none; display:block;">
+          <div class="volume-card">
+            <img class="vol-cover" src="<?= base_url('assets/images/vol-odoc.png') ?>" alt="ODOC" onerror="this.style.display='none'">
+            <div class="vol-body">
+              <div class="vol-label">Classic</div>
+              <div class="vol-title">ODOC (One Day One Classic)</div>
+              <div class="vol-desc">A daily dive into the world's most timeless literature and ancient texts.</div>
             </div>
           </div>
-        <?php endforeach; ?>
-      <?php else: ?>
-        <p style="color:var(--moon-silver); text-align:center; grid-column:1/-1;">Data buku kosong. Silakan tambahkan buku di Database!</p>
-      <?php endif; ?>
+        </a>
+
+        <!-- New Arrival -->
+        <a href="<?= base_url('catalog') ?>" style="text-decoration:none; display:block;">
+          <div class="volume-card">
+            <img class="vol-cover" src="<?= base_url('assets/images/vol-new-arrival.png') ?>" alt="New Arrival" onerror="this.style.display='none'">
+            <div class="vol-body">
+              <div class="vol-label">New Arrival</div>
+              <div class="vol-title">New Arrival</div>
+              <div class="vol-desc">The latest additions to our celestial collection — fresh off the cosmic press.</div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Fantasy Volume I -->
+        <a href="<?= base_url('catalog?q=fantasy') ?>" style="text-decoration:none; display:block;">
+          <div class="volume-card">
+            <img class="vol-cover" src="<?= base_url('assets/images/vol-fantasy.png') ?>" alt="Fantasy Volume I" onerror="this.style.display='none'">
+            <div class="vol-body">
+              <div class="vol-label">Chef on The Shelf</div>
+              <div class="vol-title">Fantasy Volume I</div>
+              <div class="vol-desc">Doraemon door to different world</div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Mini Journalism of the Week -->
+        <a href="<?= base_url('mini-journalism') ?>" style="text-decoration:none; display:block;">
+          <div class="volume-card">
+            <img class="vol-cover" src="<?= base_url('assets/images/vol-journalism.png') ?>" alt="Mini Journalism" onerror="this.style.display='none'">
+            <div class="vol-body">
+              <div class="vol-label">What's New</div>
+              <div class="vol-title">Mini Journalism of the Week</div>
+              <div class="vol-desc">Curator's choice — a weekly spotlight on minor journalism and literary gems.</div>
+            </div>
+          </div>
+        </a>
+
+      </div>
+      <div class="volume-arrows">
+        <button id="volPrev">←</button>
+        <span id="volCounter">1 / 4</span>
+        <button id="volNext">→</button>
+      </div>
     </div>
   </div>
 </section>
-
-<div class="nebula-band">
-  <h2>Search the Stars</h2>
-  <p>Every star is a story. Find yours.</p>
-  <form action="<?= base_url('catalog') ?>" method="get" style="display:inline-flex; align-items:center;">
-    <input type="text" name="q" placeholder="Title, author, constellation…" />
-    <button type="submit" class="btn-primary">Search</button>
-  </form>
-</div>
 <?= $this->endSection() ?>
 
 
@@ -803,16 +907,41 @@ header, nav, .navbar {
 })();
 
 // ── CATEGORY FRAMES ──
+// Icon mapping berdasarkan nama kategori
+const iconMap = {
+  'computer': '<?= base_url("assets/images/icon computer.png") ?>',
+  'philosophy': '<?= base_url("assets/images/icon philosophy-psychology.png") ?>',
+  'religion': '<?= base_url("assets/images/icon religion.png") ?>',
+  'social': '<?= base_url("assets/images/icon social-sciences.png") ?>',
+  'language': '<?= base_url("assets/images/icon language.png") ?>',
+  'science': '<?= base_url("assets/images/icon sciences.png") ?>',
+  'technology': '<?= base_url("assets/images/icon technology.png") ?>',
+  'art': '<?= base_url("assets/images/icon arts-recreation.png") ?>',
+  'history': '<?= base_url("assets/images/icon history-geography.png") ?>',
+  'literature': '<?= base_url("assets/images/icon literature.png") ?>',
+};
+
+function getIconForCategory(name) {
+  const lower = name.toLowerCase();
+  for (const [key, url] of Object.entries(iconMap)) {
+    if (lower.includes(key)) return url;
+  }
+  return '<?= base_url("assets/images/icon computer.png") ?>';
+}
+
+// Bangun array kategori dari data database yang sesungguhnya
 const categories = [
-  { icon: '<?= base_url("assets/images/icon computer.png") ?>', label: 'Computer, Information, and General Knowledge', id: '000', sub: '1,240 volumes', info: 'Tales of gods, heroes, and the cosmos across all ancient cultures.' },
-  { icon: '<?= base_url("assets/images/icon philosophy-psychology.png") ?>', label: 'Philosophy and Psychology', id: '100', sub: '834 volumes', info: 'Arcane sciences, transmutation, and the philosopher\'s stone.' },
-  { icon: '<?= base_url("assets/images/icon religion.png") ?>', label: 'Religion', id: '200', sub: '612 volumes', info: 'Creatures of legend, celestial beasts, and mythic fauna.' },
-  { icon: '<?= base_url("assets/images/icon social-sciences.png") ?>', label: 'Social Sciences', id: '300', sub: '1,560 volumes', info: 'The architecture of the heavens, star maps, and astral lore.' },
-  { icon: '<?= base_url("assets/images/icon language-literature.png") ?>', label: 'Language and Literature', id: '4,000', sub: '2,100 volumes', info: 'Ancient manuscripts, sacred texts, and forbidden knowledge.' },
-  { icon: '<?= base_url("assets/images/icon sciences.png") ?>', label: 'Sciences', id: '500', sub: '1,998 volumes', info: 'Oracles, prophecy, and the art of reading fate in stars.' },
-  { icon: '<?= base_url("assets/images/icon technology.png") ?>', label: 'Technology', id: '600', sub: '780 volumes', info: 'Heroic sagas, quests, and the trials of legendary figures.' },
-  { icon: '<?= base_url("assets/images/icon arts-literature.png") ?>', label: 'Arts and Literature', id: '800', sub: '1,883 volumes', info: 'Heroic sagas, quests, and the trials of legendary figures.' },
-  { icon: '<?= base_url("assets/images/icon history-geography.png") ?>', label: 'History and Geography', id: '900', sub: '3,005 volumes', info: 'Heroic sagas, quests, and the trials of legendary figures.' },
+<?php if (!empty($categories)): ?>
+  <?php foreach ($categories as $cat): ?>
+  {
+    icon: getIconForCategory(<?= json_encode($cat['name']) ?>),
+    label: <?= json_encode($cat['name']) ?>,
+    category_id: <?= (int)$cat['id'] ?>,
+    sub: '',
+    info: <?= json_encode($cat['description'] ?? 'Jelajahi koleksi di kategori ini.') ?>
+  },
+  <?php endforeach; ?>
+<?php endif; ?>
 ];
 let activeFrame = 3;
 
@@ -840,7 +969,7 @@ function renderFrames() {
     
     item.addEventListener('click', () => { 
       if (activeFrame === idx) {
-        window.location.href = "<?= base_url('catalog?kategori=') ?>" + cat.slug;
+        window.location.href = "<?= base_url('catalog?category=') ?>" + cat.category_id;
       } else {
         activeFrame = idx; 
         renderFrames(); 
@@ -854,7 +983,7 @@ function renderFrames() {
   document.getElementById('frameInfo').innerHTML = `
     <h3>${activeCat.label}</h3>
     <p>${activeCat.info}</p>
-    <a href="<?= base_url('catalog?kategori=') ?>${activeCat.slug}" class="btn-ghost" style="margin-top: 12px; display: inline-block;">
+    <a href="<?= base_url('catalog?category=') ?>${activeCat.category_id}" class="btn-ghost" style="margin-top: 12px; display: inline-block;">
       Jelajahi Koleksi ${activeCat.label} ➔
     </a>
   `;
@@ -874,6 +1003,40 @@ function getFrameSVG(fc, fc2, iconUrl, active) {
 renderFrames();
 document.getElementById('prevFrame').addEventListener('click', () => { activeFrame = (activeFrame - 1 + categories.length) % categories.length; renderFrames(); });
 document.getElementById('nextFrame').addEventListener('click', () => { activeFrame = (activeFrame + 1) % categories.length; renderFrames(); });
+
+// ── VOLUME SLIDER ──
+(function() {
+  const slider = document.getElementById('volumeSlider');
+  const cards = slider.querySelectorAll('.volume-card');
+  const counter = document.getElementById('volCounter');
+  const total = cards.length;
+  let currentVol = 0;
+
+  function scrollToVol(idx) {
+    currentVol = ((idx % total) + total) % total;
+    const cardWidth = cards[0].offsetWidth + 28; // card width + gap
+    slider.scrollTo({ left: currentVol * cardWidth, behavior: 'smooth' });
+    counter.textContent = (currentVol + 1) + ' / ' + total;
+  }
+
+  document.getElementById('volPrev').addEventListener('click', () => scrollToVol(currentVol - 1));
+  document.getElementById('volNext').addEventListener('click', () => scrollToVol(currentVol + 1));
+
+  // Update counter on manual scroll
+  let scrollTimer;
+  slider.addEventListener('scroll', function() {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function() {
+      const scrollLeft = slider.scrollLeft;
+      const cardWidth = cards[0].offsetWidth + 28;
+      const idx = Math.round(scrollLeft / cardWidth);
+      if (idx >= 0 && idx < total) {
+        currentVol = idx;
+        counter.textContent = (currentVol + 1) + ' / ' + total;
+      }
+    }, 100);
+  });
+})();
 
 
 // ── INISIALISASI SWIPER HERO ──

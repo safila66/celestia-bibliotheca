@@ -61,6 +61,19 @@
                         <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Jumlah Stok</label>
                         <input type="number" name="stock_available" required style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #1a2332; border: 1px solid rgba(126,200,160,0.5); color: #7ec8a0 !important; border-radius: 6px; box-sizing: border-box;">
                     </div>
+
+                    <?php 
+                    $predefinedGenres = ['fiction', 'mystery', 'romance', 'dark', 'classic', 'historical', 'fantasy', 'sci-fi', 'thriller', 'contemporary', 'non-fiction', 'poetry', 'biography', 'action', 'adventure', 'politics', 'friendship', 'arts', 'psychology', 'philosophy', 'religion', 'science', 'technology', 'business', 'economics'];
+                    ?><div class="form-group" style="grid-column: span 2;">
+                        <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Genres (Bisa pilih lebih dari satu)</label>
+                        <div style="display:flex; flex-wrap:wrap; gap:12px;">
+                            <?php foreach($predefinedGenres as $genre): ?>
+                                <label style="color: #ffffff; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                    <input type="checkbox" name="genres[]" value="<?= $genre ?>" style="accent-color: #7ec8a0;"> <?= ucfirst($genre) ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                     
                     <div class="form-group" style="grid-column: span 2;">
                         <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Keterangan / Deskripsi</label>

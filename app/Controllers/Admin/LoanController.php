@@ -80,4 +80,68 @@ class LoanController extends BaseController
 
         return redirect()->back()->with('success', 'Buku telah kembali ke rak.');
     }
+
+    public function ajaxCreate()
+    {
+        $userModel = new \App\Models\UserModel();
+        $data = [
+            'members' => $userModel->where('role', 'member')->findAll(),
+            'books'   => $this->bookModel->where('stock_available >', 0)->findAll()
+        ];
+        return view('admin/loans/modal_create', $data);
+    }
+
+    public function store()
+    {
+        $this->loanModel->save([
+            'user_id'     => $this->request->getPost('user_id'),
+            'book_id'     => $this->request->getPost('book_id'),
+            'borrow_date' => $this->request->getPost('borrow_date'),
+            'due_date'    => $this->request->getPost('due_date'),
+            'status'      => $this->request->getPost('status') ?? 'pending',
+            'notes'       => $this->request->getPost('notes'),
+        ]);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Catatan peminjaman berhasil ditambahkan.']);
+        }
+        return redirect()->to('admin/loan')->with('success', 'Catatan peminjaman berhasil ditambahkan.');
+    }
+
+    public function ajaxEdit($id)
+    {
+        $userModel = new \App\Models\UserModel();
+        $data = [
+            'loan'    => $this->loanModel->find($id),
+            'members' => $userModel->where('role', 'member')->findAll(),
+            'books'   => $this->bookModel->findAll()
+        ];
+        return view('admin/loans/modal_edit', $data);
+    }
+
+    public function update($id)
+    {
+        $this->loanModel->update($id, [
+            'user_id'     => $this->request->getPost('user_id'),
+            'book_id'     => $this->request->getPost('book_id'),
+            'borrow_date' => $this->request->getPost('borrow_date'),
+            'due_date'    => $this->request->getPost('due_date'),
+            'status'      => $this->request->getPost('status'),
+            'notes'       => $this->request->getPost('notes'),
+        ]);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Catatan peminjaman berhasil diperbarui.']);
+        }
+        return redirect()->to('admin/loan')->with('success', 'Catatan peminjaman berhasil diperbarui.');
+    }
+
+    public function delete($id)
+    {
+        $this->loanModel->delete($id);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Catatan peminjaman berhasil dihapus.']);
+        }
+        return redirect()->to('admin/loan')->with('success', 'Catatan peminjaman berhasil dihapus.');
+    }
 }

@@ -50,6 +50,51 @@
     .auth-links { text-align: center; margin-top: 20px; }
     .auth-links a { color: var(--gold-dim); font-size: 13px; text-decoration: none; transition: color 0.2s; }
     .auth-links a:hover { color: var(--gold); }
+
+    /* ── LIGHT MODE ── */
+    [data-theme="light"] .auth-container {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(168, 117, 42, 0.25);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+    }
+    [data-theme="light"] .auth-title {
+        color: #A8752A;
+    }
+    [data-theme="light"] .auth-subtitle {
+        color: #5A4E3A;
+    }
+    [data-theme="light"] .form-group label {
+        color: #5A4E3A;
+    }
+    [data-theme="light"] .form-control {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(168, 117, 42, 0.3);
+        color: #2C2416;
+    }
+    [data-theme="light"] .form-control::placeholder {
+        color: rgba(44, 36, 22, 0.4);
+    }
+    [data-theme="light"] .form-control:focus {
+        border-color: #A8752A;
+        background: #fff;
+    }
+    [data-theme="light"] .btn-submit {
+        background: #A8752A;
+        color: #fff;
+    }
+    [data-theme="light"] .btn-submit:hover {
+        background: #C9943E;
+    }
+    [data-theme="light"] .auth-links a {
+        color: #7A6030;
+    }
+    [data-theme="light"] .auth-links a:hover {
+        color: #A8752A;
+    }
+    [data-theme="light"] .toggle-password {
+        color: #A8752A;
+    }
 </style>
 <?= $this->endSection() ?>
 
@@ -71,7 +116,10 @@
         ✗ <?= esc(session()->getFlashdata('error')) ?>
     </div>
 <?php endif; ?>
-    <form action="<?= base_url('register/process') ?>" method="post">
+
+    <div id="ajaxAlert" style="display:none; color: #ff6b6b; font-size: 13px; margin-bottom: 15px; border: 1px solid #ff6b6b; padding: 10px; background: rgba(220,53,69,0.1);"></div>
+
+    <form id="registerForm" action="<?= base_url('register/process') ?>" method="post">
         <?= csrf_field() ?>
         
         <div class="form-group">
@@ -125,30 +173,82 @@
     </small>
 </div>
         
-        <button type="submit" class="btn-submit">Forge Your Key</button>
-    </form>
-
-    <div class="auth-links">
-        <a href="<?= base_url('login') ?>">Already have a key? Enter here.</a>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let form = document.getElementById('registerForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let btn = form.querySelector('.btn-submit');
+                let alertBox = document.getElementById('ajaxAlert');
+                
+                if (btn) {
+                    btn.innerHTML = 'Forging Key...';
+                    btn.disabled = true;
+                }
+                
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alertBox.style.display = 'block';
+                        alertBox.style.color = '#70c080';
+                        alertBox.style.borderColor = '#70c080';
+                        alertBox.style.background = 'rgba(30,60,30,0.4)';
+                        alertBox.innerHTML = '✦ ' + data.message;
+                        setTimeout(() => { window.location.href = data.redirect; }, 1000);
+                    } else {
+                        alertBox.style.display = 'block';
+                        alertBox.style.color = '#ff6b6b';
+                        alertBox.style.borderColor = '#ff6b6b';
+                        alertBox.style.background = 'rgba(220,53,69,0.1)';
+                        if (data.error) {
+                            alertBox.innerHTML = '✗ ' + data.error;
+                        } else if (data.errors) {
+                            let errs = Object.values(data.errors).join('<br>✗ ');
+                            alertBox.innerHTML = '✗ ' + errs;
+                        } else {
+                            alertBox.innerHTML = '✗ Validasi gagal.';
+                        }
+                        if (btn) {
+                            btn.innerHTML = 'Forge Archive Key';
+                            btn.disabled = false;
+                        }
+                    }
+                }).catch(err => {
+                    alertBox.style.display = 'block';
+                    alertBox.style.color = '#ff6b6b';
+                    alertBox.style.borderColor = '#ff6b6b';
+                    alertBox.style.background = 'rgba(220,53,69,0.1)';
+                    alertBox.innerHTML = '✗ Terjadi kesalahan jaringan / server.';
+                    if (btn) {
+                        btn.innerHTML = 'Forge Archive Key';
+                        btn.disabled = false;
+                    }
+                });
+            });
+        }
+    });
+
     function toggleVisibility(inputId, btnElement) {
         const input = document.getElementById(inputId);
         const svg = btnElement.querySelector('svg');
 
         if (input.type === 'password') {
-            // Ubah jadi teks biasa agar terbaca
             input.type = 'text';
-            
-            // Mengubah ikon menjadi mata tercoret (Eye-Off) dan warna lebih terang
             svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
             btnElement.style.color = 'var(--gold)';
         } else {
-            // Kembalikan menjadi titik-titik rahasia
             input.type = 'password';
-            
-            // Mengembalikan ikon mata normal
             svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
             btnElement.style.color = 'var(--gold-dim)';
         }

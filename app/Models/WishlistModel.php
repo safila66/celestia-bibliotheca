@@ -12,7 +12,7 @@ class WishlistModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = ['user_id', 'book_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -43,4 +43,30 @@ class WishlistModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function toggle($userId, $bookId)
+    {
+        $existing = $this->where('user_id', $userId)
+                         ->where('book_id', $bookId)
+                         ->first();
+
+        if ($existing) {
+            $this->delete($existing['id']);
+            return 'removed';
+        } else {
+            $this->insert([
+                'user_id' => $userId,
+                'book_id' => $bookId,
+            ]);
+            return 'added';
+        }
+    }
+
+    public function getUserWishlist($userId)
+    {
+        return $this->select('books.*')
+                    ->join('books', 'books.id = wishlists.book_id')
+                    ->where('wishlists.user_id', $userId)
+                    ->findAll();
+    }
 }

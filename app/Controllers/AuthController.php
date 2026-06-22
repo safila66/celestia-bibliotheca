@@ -43,6 +43,9 @@ class AuthController extends BaseController
         ];
 
         if (!$this->validate($rules, $messages)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'errors' => $this->validator->getErrors()]);
+            }
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -51,11 +54,17 @@ class AuthController extends BaseController
 
         // Verifikasi Email dan Password (Atau NIM khusus Admin)
         if (!$user || !password_verify($this->request->getPost('password'), $user['password'])) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Akses ditolak! Email atau Sandi salah.']);
+            }
             return redirect()->back()->withInput()->with('error', 'Akses ditolak! Email atau Sandi salah.');
         }
 
         // Cek status aktif
         if ($user['status'] !== 'active') {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Kunci arsipmu tidak aktif. Hubungi Head Librarian.']);
+            }
             return redirect()->back()->withInput()->with('error', 'Kunci arsipmu tidak aktif. Hubungi Head Librarian.');
         }
 
@@ -68,6 +77,13 @@ class AuthController extends BaseController
             'logged_in'  => true,
         ]);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => true,
+                'redirect' => base_url($user['role'] === 'admin' ? 'admin' : ''),
+                'message' => 'Selamat datang kembali di Bibliotheca Stellarum, ' . $user['name'] . '!'
+            ]);
+        }
         return $this->redirectByRole()->with('success', 'Selamat datang kembali di Bibliotheca Stellarum, ' . $user['name'] . '!');
     }
 
@@ -95,6 +111,9 @@ class AuthController extends BaseController
         ];
         
         if (!$this->validate($rules)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['success' => false, 'errors' => $this->validator->getErrors()]);
+            }
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -113,10 +132,16 @@ class AuthController extends BaseController
             ];
 
             if (!array_key_exists($email, $allowedAdmins)) {
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON(['success' => false, 'error' => 'Akses ditolak! Email tidak dikenali sebagai Librarian kelompok.']);
+                }
                 return redirect()->back()->withInput()->with('error', 'Akses ditolak! Email tidak dikenali sebagai Librarian kelompok.');
             }
 
             if ($password !== $allowedAdmins[$email]) {
+                if ($this->request->isAJAX()) {
+                    return $this->response->setJSON(['success' => false, 'error' => 'Akses ditolak! Sandi Librarian harus berupa NIM yang sesuai.']);
+                }
                 return redirect()->back()->withInput()->with('error', 'Akses ditolak! Sandi Librarian harus berupa NIM yang sesuai.');
             }
         }
@@ -141,6 +166,14 @@ class AuthController extends BaseController
             'user_role'  => $user['role'],
             'logged_in'  => true,
         ]);
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => true,
+                'redirect' => base_url($user['role'] === 'admin' ? 'admin' : ''),
+                'message' => 'Registrasi berhasil! Kunci arsip telah ditempa.'
+            ]);
+        }
 
         return $this->redirectByRole()->with('success', 'Registrasi berhasil! Kunci arsip telah ditempa.');
     }

@@ -1,6 +1,6 @@
 <div class="table-responsive">
     <table class="table table-hover align-middle border-bottom">
-        <thead style="background-color: #f1ebd9; color: #8b7355; border-bottom: 2px solid #d4b872;">
+        <thead style="background-color: #f1ebd9; color: #8b7355; border-bottom: 2px solid #d4b872; font-size: 1.1rem;">
             <tr>
                 <th scope="col" class="py-3">No</th>
                 <th scope="col" class="py-3">Nama Kategori</th>
@@ -9,7 +9,7 @@
                 <th scope="col" class="py-3 text-center">Aksi</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody style="font-size: 1.05rem;">
             <?php if(empty($categories)): ?>
                 <tr>
                     <td colspan="5" class="text-center py-4 text-muted" style="font-style: italic;">
@@ -20,10 +20,11 @@
                 <?php $no = 1; foreach($categories as $row): ?>
                 <tr>
                     <th scope="row" class="align-middle"><?= $no++ ?></th>
-                    <td class="align-middle font-weight-bold" style="color: #5a4b81;">
-                        <?= esc($row['nama_kategori']) ?> </td>
-                    <td class="align-middle"><?= esc($row['deskripsi']) ?></td> <td class="align-middle text-center">
-                        <span class="badge" style="background-color: #e6e2f1; color: #5a4b81; font-size: 14px;">
+                    <td class="align-middle font-weight-bold" style="color: #5a4b81; font-size: 1.15rem;">
+                        <?= esc($row['name']) ?> </td>
+                    <td class="align-middle"><?= esc($row['description']) ?></td> 
+                    <td class="align-middle text-center">
+                        <span class="badge" style="background-color: #e6e2f1; color: #5a4b81; font-size: 1.05rem; padding: 0.5rem 0.8rem;">
                             <?= esc($row['total_books']) ?> Buku 
                         </span>
                     </td>

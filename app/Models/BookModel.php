@@ -16,7 +16,7 @@ class BookModel extends Model
     protected $allowedFields    = [
         'title', 'author', 'publisher', 'year', 'isbn', 'call_number', 
         'category_id', 'description', 'cover_image', 'language', 'pages', 
-        'edition', 'stock', 'stock_available', 'type', 'file_pdf', 'status'
+        'edition', 'stock', 'stock_available', 'type', 'file_pdf', 'status', 'genres'
     ];
 
     protected bool $allowEmptyInserts = false;

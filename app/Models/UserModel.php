@@ -13,7 +13,7 @@ class UserModel extends Model
     protected $useSoftDeletes   = true; 
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'name', 'email', 'password', 'role', 'phone', 'address', 'photo', 'status'
+        'name', 'email', 'password', 'role', 'phone', 'address', 'photo', 'status', 'bio'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -65,5 +65,14 @@ class UserModel extends Model
     public function findByEmail($email)
     {
         return $this->where('email', $email)->first();
+    }
+
+    public function getMostActive($limit = 10)
+    {
+        return $this->select('users.*, COUNT(loans.id) as total_loans')
+                    ->join('loans', 'loans.user_id = users.id', 'left')
+                    ->groupBy('users.id')
+                    ->orderBy('total_loans', 'DESC')
+                    ->findAll($limit);
     }
 }

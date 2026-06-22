@@ -26,6 +26,16 @@
                     </div>
                     
                     <div class="form-group" style="grid-column: span 2;">
+                        <label style="color: var(--gold-dim); font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Kategori Buku</label>
+                        <select name="category_id" required style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #131a26; border: 1px solid rgba(201,168,76,0.5); color: white; border-radius: 6px; box-sizing: border-box; cursor: pointer;">
+                            <option value="">-- Pilih Kategori --</option>
+                            <?php foreach($categories as $cat): ?>
+                                <option value="<?= $cat['id'] ?>" <?= $book['category_id'] == $cat['id'] ? 'selected' : '' ?>><?= esc($cat['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
                         <label style="color: var(--gold-dim); font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Judul Buku</label>
                         <input type="text" name="title" value="<?= esc($book['title']) ?>" required style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #131a26; border: 1px solid rgba(201,168,76,0.5); color: white; border-radius: 6px; box-sizing: border-box;">
                     </div>
@@ -48,6 +58,21 @@
                     <div class="form-group" style="grid-column: span 1;">
                         <label style="color: var(--gold-dim); font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Stok Buku</label>
                         <input type="number" name="stock_available" value="<?= esc($book['stock_available']) ?>" required style="width: 100%; padding: 12px; font-size: 15px; font-weight: bold; background: #131a26; border: 1px solid rgba(201,168,76,0.5); color: #7ec8a0; border-radius: 6px; box-sizing: border-box;">
+                    </div>
+
+                    <?php 
+                    $predefinedGenres = ['fiction', 'mystery', 'romance', 'dark', 'classic', 'historical', 'fantasy', 'sci-fi', 'thriller', 'contemporary', 'non-fiction', 'poetry', 'biography', 'action', 'adventure', 'politics', 'friendship', 'arts', 'psychology', 'philosophy', 'religion', 'science', 'technology', 'business', 'economics'];
+                    $currentGenres = explode(',', $book['genres'] ?? '');
+                    ?>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label style="color: var(--gold-dim); font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Genres (Bisa pilih lebih dari satu)</label>
+                        <div style="display:flex; flex-wrap:wrap; gap:12px;">
+                            <?php foreach($predefinedGenres as $genre): ?>
+                                <label style="color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                    <input type="checkbox" name="genres[]" value="<?= $genre ?>" style="accent-color: var(--gold);" <?= in_array($genre, $currentGenres) ? 'checked' : '' ?>> <?= ucfirst($genre) ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                     
                     <div class="form-group" style="grid-column: span 2;">

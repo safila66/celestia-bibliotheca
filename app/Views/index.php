@@ -30,7 +30,7 @@
         <p class="hero-subtitle">Where Stars Write in Ink</p>
         <p class="hero-desc">
             A celestial sanctuary of knowledge, myth, and wonder. Explore thousands of volumes
-            illuminated beneath an eternal night sky — from ancient lore to the furthest reaches
+            illuminated beneath an eternal night sky, from ancient lore to the furthest reaches
             of imagination.
         </p>
         <div class="hero-cta">
@@ -66,6 +66,20 @@
         </div>
     </div>
 </section>
+
+<!-- ═══════════════════════════════════════════
+     SEARCH BAND
+════════════════════════════════════════════ -->
+<div class="nebula-band" style="margin-top: 40px;">
+    <h2>Search the Stars</h2>
+    <p>Every star is a story. Find yours.</p>
+    <form action="<?= base_url('search') ?>" method="GET" class="search-form">
+        <?= csrf_field() ?>
+        <input type="text" name="q" placeholder="Title, author, constellation…"
+               value="<?= esc($searchQuery ?? '') ?>">
+        <button type="submit" class="btn-primary">Search</button>
+    </form>
+</div>
 
 <!-- ═══════════════════════════════════════════
      CATEGORY FRAMES
@@ -116,48 +130,51 @@
 </section>
 
 <!-- ═══════════════════════════════════════════
-     FEATURED BOOKS
+     FEATURED VOLUMES (Journal Collection)
 ════════════════════════════════════════════ -->
 <section id="collection-section">
     <div class="section-header">
         <div class="divider-rune">✦</div>
         <h2>Featured Volumes</h2>
-        <p>Curated from across the celestial archive</p>
+        <p>Curated journals from across the celestial archive</p>
     </div>
     <div id="collection">
-        <div class="collection-grid" id="bookGrid">
-            <?php if (!empty($books)): ?>
-                <?php foreach ($books as $book): ?>
-                <div class="book-card">
-                    <div class="book-cover"><?= esc($book['emoji']) ?></div>
-                    <div class="book-genre"><?= esc($book['genre']) ?></div>
-                    <div class="book-title"><?= esc($book['title']) ?></div>
-                    <div class="book-author"><?= esc($book['author']) ?></div>
-                    <div class="book-meta">
-                        <span class="stars"><?= esc($book['stars']) ?></span>
-                        <a href="<?= base_url('book/' . ($book['slug'] ?? '')) ?>" class="book-btn">Read</a>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <!-- Fallback rendered by books.js if $books is empty -->
-            <?php endif; ?>
+        <div style="display: flex; overflow-x: auto; gap: 24px; padding: 20px 56px 40px 56px; scroll-snap-type: x mandatory; scrollbar-width: none;">
+            
+            <!-- ODOC -->
+            <div style="scroll-snap-align: center; min-width: 320px; flex: 0 0 320px; background: var(--bg-card); padding: 30px; border: 1px solid var(--border-gold); border-radius: 6px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 80px; opacity: 0.05;">🏛️</div>
+                <div style="color: var(--gold); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; font-weight: bold;">Classic</div>
+                <div style="font-family: 'Cinzel', serif; font-size: 20px; color: var(--text-body); margin-bottom: 8px;">ODOC (One Day One Classic)</div>
+                <div style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">A daily dive into the world's most timeless literature and ancient texts.</div>
+            </div>
+
+            <!-- New Arrival -->
+            <div style="scroll-snap-align: center; min-width: 320px; flex: 0 0 320px; background: var(--bg-card); padding: 30px; border: 1px solid var(--border-gold); border-radius: 6px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 80px; opacity: 0.05;">✨</div>
+                <div style="color: var(--gold); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; font-weight: bold;">New Arrival</div>
+                <div style="font-family: 'Cinzel', serif; font-size: 20px; color: var(--text-body); margin-bottom: 8px;">The Song of Achilles</div>
+                <div style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Fantasy · Vol. I added to collection</div>
+            </div>
+
+            <!-- Fantasy Volume I -->
+            <div style="scroll-snap-align: center; min-width: 320px; flex: 0 0 320px; background: var(--bg-card); padding: 30px; border: 1px solid var(--border-gold); border-radius: 6px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 80px; opacity: 0.05;">🐉</div>
+                <div style="color: var(--gold); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; font-weight: bold;">Reading Room</div>
+                <div style="font-family: 'Cinzel', serif; font-size: 20px; color: var(--text-body); margin-bottom: 8px;">Fantasy Volume I</div>
+                <div style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Every eve at 8 & 10 PM · Open to all</div>
+            </div>
+
+            <!-- Mini Journalism -->
+            <div style="scroll-snap-align: center; min-width: 320px; flex: 0 0 320px; background: var(--bg-card); padding: 30px; border: 1px solid var(--border-gold); border-radius: 6px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 80px; opacity: 0.05;">📰</div>
+                <div style="color: var(--gold); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; font-weight: bold;">What's New</div>
+                <div style="font-family: 'Cinzel', serif; font-size: 20px; color: var(--text-body); margin-bottom: 8px;">Mini Journalism of the Week</div>
+                <div style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Curator's choice · Minor Journalism</div>
+            </div>
+
         </div>
     </div>
 </section>
-
-<!-- ═══════════════════════════════════════════
-     SEARCH BAND
-════════════════════════════════════════════ -->
-<div class="nebula-band">
-    <h2>Search the Stars</h2>
-    <p>Every star is a story. Find yours.</p>
-    <form action="<?= base_url('search') ?>" method="GET" class="search-form">
-        <?= csrf_field() ?>
-        <input type="text" name="q" placeholder="Title, author, constellation…"
-               value="<?= esc(isset($searchQuery) ? $searchQuery : '') ?>">
-        <button type="submit" class="btn-primary">Search</button>
-    </form>
-</div>
 
 <?= $this->endSection() ?>

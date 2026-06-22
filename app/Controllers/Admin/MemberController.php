@@ -63,6 +63,9 @@ class MemberController extends BaseController
             'photo'    => $photo,
         ]);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Anggota baru berhasil ditambahkan!']);
+        }
         return redirect()->to('admin/list/members')->with('success', 'Anggota baru berhasil ditambahkan!');
     }
 
@@ -78,7 +81,10 @@ class MemberController extends BaseController
     public function update($id)
     {
         $member = $this->userModel->find($id);
-        if (!$member) return redirect()->to('admin/list/members')->with('error', 'Anggota tidak ditemukan.');
+        if (!$member) { if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Anggota tidak ditemukan.']);
+        }
+        return redirect()->to('admin/list/members')->with('error', 'Anggota tidak ditemukan.'); }
 
         $photo = $this->handlePhotoUpload() ?? $member['photo'];
 
@@ -91,6 +97,9 @@ class MemberController extends BaseController
             'photo'   => $photo,
         ]);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Data anggota berhasil diperbarui!']);
+        }
         return redirect()->to('admin/list/members')->with('success', 'Data anggota berhasil diperbarui!');
     }
 
@@ -100,10 +109,16 @@ class MemberController extends BaseController
     public function delete($id)
     {
         $member = $this->userModel->find($id);
-        if (!$member) return redirect()->to('admin/list/members')->with('error', 'Anggota tidak ditemukan.');
+        if (!$member) { if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Anggota tidak ditemukan.']);
+        }
+        return redirect()->to('admin/list/members')->with('error', 'Anggota tidak ditemukan.'); }
 
         $this->userModel->delete($id);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Anggota berhasil dipindahkan ke tong sampah.']);
+        }
         return redirect()->to('admin/list/members')->with('success', 'Anggota berhasil dipindahkan ke tong sampah.');
     }
 
@@ -123,12 +138,18 @@ class MemberController extends BaseController
     public function restore($id)
     {
         $this->userModel->update($id, ['deleted_at' => null]);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Anggota berhasil di-restore.']);
+        }
         return redirect()->to('admin/list/members/trash')->with('success', 'Anggota berhasil di-restore.');
     }
 
     public function deletePermanent($id)
     {
         $this->userModel->delete($id, true);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Anggota berhasil dihapus permanen.']);
+        }
         return redirect()->to('admin/list/members/trash')->with('success', 'Anggota berhasil dihapus permanen.');
     }
 

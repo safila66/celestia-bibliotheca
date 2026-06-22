@@ -138,10 +138,14 @@
             <?php foreach ($buku as $item): ?>
                 <div class="book-card">
                     <div class="book-cover-box">
-                        <img src="<?= base_url('assets/images/icon-computer.png') ?>" alt="Book Icon">
+                        <?php if (!empty($item['cover_image'])): ?>
+                            <img src="<?= base_url('uploads/covers/' . $item['cover_image']) ?>" alt="<?= esc($item['title']) ?>" style="max-width:100%; max-height:100%; object-fit:cover; opacity:1;">
+                        <?php else: ?>
+                            <img src="<?= base_url('assets/images/icon-computer.png') ?>" alt="Book Icon">
+                        <?php endif; ?>
                     </div> 
                     
-                    <div class="book-genre"><?= esc($item['category'] ?? 'General') ?></div>
+                    <div class="book-genre"><?= esc($item['category_name'] ?? 'General') ?></div>
                     <div class="book-title"><?= esc($item['title']) ?></div>
                     <div class="book-author"><?= esc($item['author'] ?? 'Unknown Scholar') ?></div>
                     
@@ -155,10 +159,48 @@
 
         <?php else: ?>
             <div class="empty-state">
-                <p>✦ Gerbang langit terbuka, namun arsip belum menemukan catatan bintang untuk kategori ini. ✦</p>
-                <a href="<?= base_url('/') ?>" style="color: var(--gold); text-decoration: underline; margin-top: 15px; display: inline-block;">Kembali ke Beranda</a>
+                <p>✦ Buku/data tidak ditemukan. ✦</p>
+                <?php if (empty($keyword) || empty($rekomendasi)): ?>
+                    <a href="<?= base_url('/') ?>" style="color: var(--gold); text-decoration: underline; margin-top: 15px; display: inline-block;">Kembali ke Beranda</a>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>
+
+    <?php if (empty($buku) && !empty($keyword) && isset($rekomendasi)): ?>
+        <?php if (!empty($rekomendasi)): ?>
+            <div class="catalog-header" style="margin-top: 40px; text-align: left;">
+                <h2 style="font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 5px;">Rekomendasi Buku Serupa</h2>
+                <p>Berdasarkan genre atau deskripsi dari pencarian Anda.</p>
+            </div>
+            <div class="collection-grid">
+                <?php foreach ($rekomendasi as $item): ?>
+                    <div class="book-card">
+                        <div class="book-cover-box">
+                            <?php if (!empty($item['cover_image'])): ?>
+                                <img src="<?= base_url('uploads/covers/' . $item['cover_image']) ?>" alt="<?= esc($item['title']) ?>" style="max-width:100%; max-height:100%; object-fit:cover; opacity:1;">
+                            <?php else: ?>
+                                <img src="<?= base_url('assets/images/icon-computer.png') ?>" alt="Book Icon">
+                            <?php endif; ?>
+                        </div> 
+                        
+                        <div class="book-genre"><?= esc($item['category_name'] ?? 'General') ?></div>
+                        <div class="book-title"><?= esc($item['title']) ?></div>
+                        <div class="book-author"><?= esc($item['author'] ?? 'Unknown Scholar') ?></div>
+                        
+                        <div class="book-meta">
+                            <span style="color: var(--gold); font-size: 11px; letter-spacing: 2px;">★★★★★</span>
+                            <a href="<?= base_url('book/detail/' . $item['id']) ?>" class="book-btn">Read</a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="empty-state" style="margin-top: 20px;">
+                <p>✦ Tidak ada buku yang serupa. ✦</p>
+                <a href="<?= base_url('/') ?>" style="color: var(--gold); text-decoration: underline; margin-top: 15px; display: inline-block;">Kembali ke Beranda</a>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
 </div>
 <?= $this->endSection() ?>

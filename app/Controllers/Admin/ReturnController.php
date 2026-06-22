@@ -44,19 +44,38 @@ class ReturnController extends BaseController
     // ══════════════════════════════════════════════════════════
     public function simpanPengembalian()
     {
-        // Mengambil ID Peminjaman (Loan ID) dari form input
         $loanId = $this->request->getPost('loan_id');
         
         if (!$loanId) {
+            if ($this->request->isAJAX()) return $this->response->setJSON(['success' => false, 'error' => 'Pilih ID Transaksi yang ingin dikembalikan.']);
             return redirect()->back()->with('error', 'Pilih ID Transaksi yang ingin dikembalikan.');
         }
 
         $loan = $this->loanModel->find($loanId);
 
-        // Pastikan datanya ada dan statusnya masih dipinjam (active/overdue)
         if ($loan && in_array($loan['status'], ['active', 'overdue'])) {
             
-            // 1. Kembalikan / Tambah Stok Buku (+1)
+            // Calculate fine if returned late
+            $dueDate = new \DateTime($loan['due_date']);
+            $returnDate = new \DateTime(); 
+            $dueDate->setTime(0, 0, 0);
+            $returnDate->setTime(0, 0, 0);
+
+            if ($returnDate > $dueDate) {
+                $daysLate = $returnDate->diff($dueDate)->days;
+                if ($daysLate > 0) {
+                    $fineAmount = $daysLate * 1000;
+                    $fineModel = new \App\Models\FineModel();
+                    $fineModel->insert([
+                        'user_id' => $loan['user_id'],
+                        'loan_id' => $loan['id'],
+                        'amount' => $fineAmount,
+                        'status' => 'unpaid',
+                        'description' => 'Terlambat ' . $daysLate . ' hari'
+                    ]);
+                }
+            }
+
             $book = $this->bookModel->find($loan['book_id']);
             if ($book) {
                 $this->bookModel->update($loan['book_id'], [
@@ -64,15 +83,16 @@ class ReturnController extends BaseController
                 ]);
             }
 
-            // 2. Ubah Status Peminjaman menjadi Selesai ('returned')
             $this->loanModel->update($loanId, [
                 'status' => 'returned'
             ]);
 
-            return redirect()->to('admin/pengembalian')->with('success', 'Buku berhasil dikembalikan dan stok telah diperbarui!');
+            if ($this->request->isAJAX()) return $this->response->setJSON(['success' => true, 'message' => 'Buku berhasil dikembalikan dan denda dihitung jika terlambat!']);
+            return redirect()->to('admin/pengembalian')->with('success', 'Buku berhasil dikembalikan dan denda dihitung jika terlambat!');
         }
 
-        return redirect()->back()->with('error', 'Data tidak valid atau buku sudah dikembalikan sebelumnya.');
+        if ($this->request->isAJAX()) return $this->response->setJSON(['success' => false, 'error' => 'Data tidak valid.']);
+        return redirect()->back()->with('error', 'Data tidak valid.');
     }
 
     // ══════════════════════════════════════════════════════════

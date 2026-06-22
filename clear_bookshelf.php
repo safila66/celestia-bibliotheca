@@ -1,0 +1,9 @@
+<?php
+define('FCPATH', __DIR__ . '/public' . DIRECTORY_SEPARATOR);
+require FCPATH . '../app/Config/Paths.php';
+$paths = new Config\Paths();
+require rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
+
+$db = \Config\Database::connect();
+$db->table('user_bookshelf_details')->truncate();
+echo "Table truncated successfully.\n";

@@ -465,7 +465,7 @@
           <?php endif; ?>
         </p>
       </div>
-      <div class="loan-actions">
+      <div class="loan-actions" style="flex-wrap: wrap;">
         <?php if ($isLoggedIn): ?>
           <?php if ($stockOk): ?>
             <form action="<?= base_url('buku/' . $book['id'] . '/pinjam') ?>" method="post" style="margin:0;">
@@ -477,7 +477,16 @@
           <?php endif; ?>
           <form action="<?= base_url('buku/' . $book['id'] . '/wishlist') ?>" method="post" style="margin:0;">
             <?= csrf_field() ?>
-            <button type="submit" class="btn-wishlist">♡ Simpan</button>
+            <button type="submit" class="btn-wishlist" style="margin-right:15px;">♡ Simpan</button>
+          </form>
+          
+          <form onsubmit="addToBookshelf(event, <?= $book['id'] ?>)" style="margin:0; display:flex; gap:8px; align-items:center;">
+             <select id="bsStatus-<?= $book['id'] ?>" style="padding: 10px; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); color:#C9A84C; border-radius:4px; outline:none; font-family:'Raleway',sans-serif;">
+                <option value="tbr">TBR (To Be Read)</option>
+                <option value="read">Read</option>
+                <option value="dnf">DNF</option>
+             </select>
+             <button type="submit" class="btn-wishlist" id="btnBs-<?= $book['id'] ?>">+ Bookshelf</button>
           </form>
         <?php else: ?>
           <a href="<?= base_url('login?redirect=' . urlencode(current_url())) ?>" class="btn-pinjam">✦ Login untuk Meminjam</a>
@@ -507,8 +516,94 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        if (form.action.includes('/pinjam') || form.action.includes('/wishlist')) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = form.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✦ Memproses...';
+                btn.disabled = true;
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        if (form.action.includes('/wishlist')) {
+                            if (data.isWishlisted) {
+                                btn.innerHTML = '♥ Tersimpan';
+                                btn.style.color = 'var(--gold)';
+                            } else {
+                                btn.innerHTML = '♡ Simpan';
+                                btn.style.color = '';
+                            }
+                            btn.disabled = false;
+                        } else {
+                            btn.innerHTML = '✦ Berhasil';
+                            // Biarkan disabled agar tidak dobel submit
+                        }
+                    } else {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        alert(data.error || 'Terjadi kesalahan.');
+                    }
+                })
+                .catch(err => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    alert('Terjadi kesalahan jaringan.');
+                });
+            });
+        }
+    });
+});
+</script>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <?php if (!empty($book['file_pdf'])): ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  async function addToBookshelf(e, bookId) {
+      e.preventDefault();
+      const status = document.getElementById('bsStatus-' + bookId).value;
+      const btn = document.getElementById('btnBs-' + bookId);
+      const originalText = btn.innerText;
+      btn.innerText = 'Menyimpan...';
+
+      try {
+          const res = await fetch('<?= base_url('my-bookshelf/add') ?>', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'X-Requested-With': 'XMLHttpRequest'
+              },
+              body: new URLSearchParams({
+                  'book_id': bookId,
+                  'status': status,
+                  '<?= csrf_token() ?>': '<?= csrf_hash() ?>'
+              })
+          });
+          const result = await res.json();
+          if(result.success) {
+              btn.innerText = '✓ Tersimpan';
+              setTimeout(() => btn.innerText = originalText, 2000);
+          }
+      } catch (err) {
+          btn.innerText = 'X Gagal';
+          setTimeout(() => btn.innerText = originalText, 2000);
+      }
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 <script>
 (function() {
     const pdfUrl   = "<?= base_url('assets/pdfs/' . esc($book['file_pdf'])) ?>";

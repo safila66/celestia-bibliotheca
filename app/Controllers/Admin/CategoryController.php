@@ -34,7 +34,10 @@ public function index()
         ];
 
         if (! $this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'errors' => $this->validator->getErrors()]);
+        }
+        return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
         $categoryModel = new CategoryModel();
@@ -44,6 +47,9 @@ public function index()
             'description' => $this->request->getPost('description'),
         ]);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Kategori berhasil ditambahkan.']);
+        }
         return redirect()->to('/admin/kategori')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
@@ -51,6 +57,9 @@ public function index()
     {
         $categoryModel = new CategoryModel();
         $categoryModel->delete($id);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Kategori berhasil dihapus.']);
+        }
         return redirect()->to('/admin/kategori')->with('success', 'Kategori berhasil dihapus.');
     }
 }

@@ -1,27 +1,21 @@
-<?= $this->extend('layouts/template') ?>
+<?= $this->extend('admin/template') ?>
 
 <?= $this->section('content') ?>
-<div class="container-fluid mt-3">
-    <div class="row mb-4 align-items-center">
-        <div class="col-sm-6">
-            <h1 class="h3 mb-0" style="font-family: serif; color: #8b7355; font-weight: bold;">Manajemen Kategori</h1>
-        </div>
-        <div class="col-sm-6 text-right text-end">
-            <button class="btn font-weight-bold shadow-sm" id="btnTambahKategori" style="background-color: #d4b872; color: #fff; border-radius: 6px;">
-                + TAMBAH KATEGORI BARU
-            </button>
-        </div>
-    </div>
+<div class="page-header">
+    <h2>Manajemen Kategori</h2>
+    <button class="btn btn-primary" id="btnTambahKategori">+ Tambah Kategori Baru</button>
+</div>
 
-    <div class="card shadow-sm border-0" style="background-color: #fdfaf2; border-radius: 8px;">
-        <div class="card-body p-4">
-            <div id="viewDataTabel"></div>
-        </div>
+<div class="card">
+    <div style="padding: 1rem;">
+        <div id="viewDataTabel"></div>
     </div>
 </div>
 
 <div id="viewModal" style="display:none;"></div>
+<?= $this->endSection() ?>
 
+<?= $this->section('scripts') ?>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     $(document).ready(function() {

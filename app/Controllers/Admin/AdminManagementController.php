@@ -62,6 +62,9 @@ class AdminManagementController extends BaseController
             'photo'    => $photo,
         ]);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Admin baru berhasil ditambahkan!']);
+        }
         return redirect()->to('admin/list/superadmin')->with('success', 'Admin baru berhasil ditambahkan!');
     }
 
@@ -77,7 +80,10 @@ class AdminManagementController extends BaseController
     public function update($id)
     {
         $admin = $this->userModel->find($id);
-        if (! $admin) return redirect()->to('admin/list/superadmin')->with('error', 'Admin tidak ditemukan.');
+        if (! $admin) { if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Admin tidak ditemukan.']);
+        }
+        return redirect()->to('admin/list/superadmin')->with('error', 'Admin tidak ditemukan.'); }
 
         $photo = $this->handlePhotoUpload() ?? $admin['photo'];
 
@@ -90,6 +96,9 @@ class AdminManagementController extends BaseController
             'photo'   => $photo,
         ]);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Data admin berhasil diperbarui.']);
+        }
         return redirect()->to('admin/list/superadmin')->with('success', 'Data admin berhasil diperbarui.');
     }
 
@@ -99,10 +108,16 @@ class AdminManagementController extends BaseController
     public function delete($id)
     {
         $admin = $this->userModel->find($id);
-        if (! $admin) return redirect()->to('admin/list/superadmin')->with('error', 'Admin tidak ditemukan.');
+        if (! $admin) { if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'error' => 'Admin tidak ditemukan.']);
+        }
+        return redirect()->to('admin/list/superadmin')->with('error', 'Admin tidak ditemukan.'); }
 
         $this->userModel->delete($id);
 
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Admin berhasil dibuang ke tong sampah.']);
+        }
         return redirect()->to('admin/list/superadmin')->with('success', 'Admin berhasil dibuang ke tong sampah.');
     }
 
@@ -122,12 +137,18 @@ class AdminManagementController extends BaseController
     public function restore($id)
     {
         $this->userModel->update($id, ['deleted_at' => null]);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Admin berhasil dikembalikan.']);
+        }
         return redirect()->to('admin/list/superadmin/trash')->with('success', 'Admin berhasil dikembalikan.');
     }
 
     public function purge($id)
     {
         $this->userModel->delete($id, true);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Admin telah dihapus permanen.']);
+        }
         return redirect()->to('admin/list/superadmin/trash')->with('success', 'Admin telah dihapus permanen.');
     }
 

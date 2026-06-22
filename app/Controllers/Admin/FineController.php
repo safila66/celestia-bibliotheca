@@ -10,6 +10,7 @@ class FineController extends BaseController
     public function index()
     {
         $fineModel = new FineModel();
+        $fineModel->syncFines(); // Sync fines before loading view
         $status    = $this->request->getGet('status') ?? 'all';
 
         $data = [
@@ -27,7 +28,20 @@ class FineController extends BaseController
     public function markPaid($id)
     {
         $fineModel = new FineModel();
-        $fineModel->update($id, ['status' => 'paid', 'paid_date' => date('Y-m-d')]);
+        $fineModel->update($id, ['status' => 'paid', 'paid_at' => date('Y-m-d H:i:s')]);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Denda ditandai sudah dibayar.']);
+        }
         return redirect()->to('/admin/fines')->with('success', 'Denda ditandai sudah dibayar.');
+    }
+
+    public function delete($id)
+    {
+        $fineModel = new FineModel();
+        $fineModel->delete($id);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true, 'message' => 'Data denda berhasil dihapus.']);
+        }
+        return redirect()->to('/admin/fines')->with('success', 'Data denda berhasil dihapus.');
     }
 }

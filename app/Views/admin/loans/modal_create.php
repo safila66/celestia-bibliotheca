@@ -1,52 +1,61 @@
-<div class="modal fade" id="modalTambah" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Catat Peminjaman Baru</h5>
-                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-            </div>
-            
-            <form action="<?= base_url('create/loan') ?>" method="post">
-                <?= csrf_field(); ?>
-                <div class="modal-body">
+<div class="modal-dialog modal-lg" style="width: 90%; max-width: 700px; height: auto; margin: auto; display: flex; flex-direction: column;">
+    <div class="modal-content" style="background: #0a0f18; border: 2px solid #7ec8a0; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.95); display: flex; flex-direction: column; overflow: hidden;">
+        
+        <div class="modal-header" style="border-bottom: 1px solid rgba(126,200,160,0.3); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;">
+            <h5 class="modal-title" style="color: #7ec8a0; font-family: 'Cinzel', serif; margin: 0; font-size: 22px; font-weight: bold;">+ Catat Peminjaman Baru</h5>
+            <button type="button" onclick="$('#createModal').hide()" style="background: none; border: none; color: #ffffff; font-size: 2rem; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        
+        <form action="<?= base_url('admin/create/loan') ?>" method="post" style="display: flex; flex-direction: column; margin: 0;">
+            <?= csrf_field(); ?>
+            <div class="modal-body" style="padding: 25px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
                     
                     <div class="form-group">
-                        <label>Nama Member</label>
-                        <select name="id_member" class="form-control" required>
-                            <option value="">-- Pilih Member --</option>
-                            <?php foreach ($members as $m) : ?>
-                                <option value="<?= $m['id_member'] ?>"><?= esc($m['name_member']) ?></option>
+                        <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Nama Peminjam</label>
+                        <select name="user_id" required style="width: 100%; padding: 12px; font-size: 15px; background: #1a2332; border: 1px solid rgba(126,200,160,0.5); color: #ffffff; border-radius: 6px;">
+                            <option value="" disabled selected>-- Pilih Member --</option>
+                            <?php foreach ($members as $m): ?>
+                                <option value="<?= esc($m['id']) ?>" style="background: #1a2332;"><?= esc($m['name']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Judul Buku</label>
-                        <select name="id_book" class="form-control" required>
-                            <option value="">-- Pilih Buku --</option>
-                            <?php foreach ($books as $b) : ?>
-                                <option value="<?= $b['id_book'] ?>"><?= esc($b['title_book']) ?></option>
+                        <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Judul Buku</label>
+                        <select name="book_id" required style="width: 100%; padding: 12px; font-size: 15px; background: #1a2332; border: 1px solid rgba(126,200,160,0.5); color: #ffffff; border-radius: 6px;">
+                            <option value="" disabled selected>-- Pilih Buku --</option>
+                            <?php foreach ($books as $b): ?>
+                                <option value="<?= esc($b['id']) ?>" style="background: #1a2332;"><?= esc($b['title']) ?> (<?= esc($b['call_number']) ?>)</option>
                             <?php endforeach; ?>
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label>Tanggal Peminjaman</label>
-                        <input type="date" name="tanggal_loan" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Tanggal Pinjam</label>
+                            <input type="date" name="borrow_date" value="<?= date('Y-m-d') ?>" required style="width: 100%; padding: 12px; font-size: 15px; background: #1a2332; border: 1px solid rgba(126,200,160,0.5); color: #ffffff; border-radius: 6px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Tenggat Waktu</label>
+                            <input type="date" name="due_date" value="<?= date('Y-m-d', strtotime('+14 days')) ?>" required style="width: 100%; padding: 12px; font-size: 15px; background: #1a2332; border: 1px solid rgba(126,200,160,0.5); color: #ffffff; border-radius: 6px;">
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Target Tanggal Kembali</label>
-                        <input type="date" name="tanggal_kembali" class="form-control" required>
+                        <label style="color: #e2e8f0; font-size: 13px; font-weight: bold; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block;">Status Awal</label>
+                        <select name="status" required style="width: 100%; padding: 12px; font-size: 15px; background: #1a2332; border: 1px solid rgba(126,200,160,0.5); color: #7ec8a0; border-radius: 6px; font-weight: bold;">
+                            <option value="pending" style="background: #1a2332; color:#fff;">Menunggu Persetujuan</option>
+                            <option value="active" selected style="background: #1a2332; color:#fff;">Aktif (Sedang Dipinjam)</option>
+                        </select>
                     </div>
-
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Peminjaman</button>
-                </div>
-            </form>
+            </div>
             
-        </div>
+            <div class="modal-footer" style="border-top: 1px solid rgba(126,200,160,0.3); padding: 15px 25px; text-align: right; background: #070a11;">
+                <button type="button" onclick="$('#createModal').hide()" style="background: transparent; color: #7ec8a0; border: 1px solid #7ec8a0; padding: 10px 20px; font-size: 14px; margin-right: 10px; cursor: pointer; border-radius: 4px; font-weight: bold;">Batal</button>
+                <button type="submit" style="background: #7ec8a0; color: #04060f; padding: 10px 20px; font-size: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px;">Simpan Catatan</button>
+            </div>
+        </form>
     </div>
 </div>

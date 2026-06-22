@@ -241,8 +241,13 @@
             <a href="/admin/users" class="nav-item <?= str_contains(current_url(),'admin/users') ? 'active' : '' ?>">
                 👥 Anggota
             </a>
-            <a href="/admin/list/superadmin" class="nav-item <?= str_contains(current_url(),'admin/list/superadmin') ? 'active' : '' ?>">
+            <?php if (session()->get('role') === 'superadmin'): ?>
+            <a href="<?= base_url('admin/list/superadmin') ?>" class="nav-item <?= str_contains(current_url(),'admin/list/superadmin') ? 'active' : '' ?>">
                 🛡️ Manajemen Admin
+            </a>
+            <?php endif; ?>
+            <a href="<?= base_url('admin/list/journals') ?>" class="nav-item <?= str_contains(current_url(),'admin/list/journals') ? 'active' : '' ?>">
+                📰 Manajemen Jurnal
             </a>
         </div>
 
@@ -259,6 +264,12 @@
             </a>
             <a href="/admin/room-bookings" class="nav-item <?= str_contains(current_url(),'room-bookings') ? 'active' : '' ?>">
                 🏛️ Room Booking
+            </a>
+            <a href="/admin/services" class="nav-item <?= str_contains(current_url(),'admin/services') ? 'active' : '' ?>">
+                📡 Monitor Layanan
+            </a>
+            <a href="/admin/scanner" class="nav-item <?= str_contains(current_url(),'admin/scanner') ? 'active' : '' ?>">
+                📷 QR Scanner
             </a>
         </div>
 
@@ -304,6 +315,99 @@
     </main>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('submit', function(e) {
+        let form = e.target;
+        if (form.tagName === 'FORM' && form.closest('.modal')) {
+            e.preventDefault();
+            
+            let btn = form.querySelector('button[type="submit"]');
+            let originalText = btn ? btn.innerHTML : 'Simpan';
+            if (btn) {
+                btn.innerHTML = 'Memproses...';
+                btn.disabled = true;
+            }
+
+            let alertBox = form.querySelector('.ajax-alert');
+            if (!alertBox) {
+                alertBox = document.createElement('div');
+                alertBox.className = 'ajax-alert';
+                alertBox.style.padding = '10px';
+                alertBox.style.marginBottom = '15px';
+                alertBox.style.borderRadius = '4px';
+                alertBox.style.border = '1px solid transparent';
+                form.insertBefore(alertBox, form.firstChild);
+            }
+            
+            // Fungsi helper untuk scroll ke atas modal
+            function scrollToAlert() {
+                let scrollTarget = form.closest('.modal-body') || form.closest('.modal-content') || form;
+                scrollTarget.scrollTo({top: 0, behavior: 'smooth'});
+            }
+
+            fetch(form.action, {
+                method: form.method || 'POST',
+                body: new FormData(form),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alertBox.style.display = 'block';
+                    alertBox.style.color = '#70c080';
+                    alertBox.style.borderColor = '#70c080';
+                    alertBox.style.background = 'rgba(30,60,30,0.4)';
+                    alertBox.innerHTML = '✦ ' + (data.message || 'Berhasil disimpan!');
+                    scrollToAlert();
+                    
+                    setTimeout(() => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            window.location.reload();
+                        }
+                    }, 800);
+                } else {
+                    alertBox.style.display = 'block';
+                    alertBox.style.color = '#ff6b6b';
+                    alertBox.style.borderColor = '#ff6b6b';
+                    alertBox.style.background = 'rgba(220,53,69,0.1)';
+                    
+                    if (data.error) {
+                        alertBox.innerHTML = '✗ ' + data.error;
+                    } else if (data.errors) {
+                        alertBox.innerHTML = '✗ ' + Object.values(data.errors).join('<br>✗ ');
+                    } else {
+                        alertBox.innerHTML = '✗ Gagal menyimpan data.';
+                    }
+                    scrollToAlert();
+                    if (btn) {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                }
+            })
+            .catch(err => {
+                alertBox.style.display = 'block';
+                alertBox.style.color = '#ff6b6b';
+                alertBox.style.borderColor = '#ff6b6b';
+                alertBox.style.background = 'rgba(220,53,69,0.1)';
+                alertBox.innerHTML = '✗ Terjadi kesalahan jaringan / server.';
+                scrollToAlert();
+                if (btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+        }
+    });
+});
+</script>
 
 <?= $this->renderSection('scripts') ?>
 </body>
