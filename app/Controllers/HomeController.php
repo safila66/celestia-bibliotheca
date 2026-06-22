@@ -147,9 +147,18 @@ class HomeController extends BaseController
         $book = $this->bookModel->find($id);
         if (!$book) return redirect()->to('/catalog')->with('error', 'Buku tidak ditemukan.');
         
+        $reviewModel = new \App\Models\ReviewModel();
+        $reviews = $reviewModel->where('book_id', $id)->findAll();
+        $totalRating = 0;
+        foreach ($reviews as $r) {
+            $totalRating += $r['rating'];
+        }
+        $avg_rating = count($reviews) > 0 ? round($totalRating / count($reviews), 1) : 0;
+
         $data = [
             'title' => 'Formulir Peminjaman',
             'book' => $book,
+            'avg_rating' => $avg_rating,
             'user' => $this->userModel->find(session()->get('user_id'))
         ];
         return view('user/borrow_form', $data);

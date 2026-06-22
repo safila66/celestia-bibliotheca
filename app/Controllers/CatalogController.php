@@ -63,6 +63,7 @@ class CatalogController extends BaseController
                            ->orLike('books.description', $keyword)
                            ->orLike('books.publisher', $keyword)
                            ->orLike('categories.name', $keyword)
+                           ->orLike('books.genres', $keyword)
                            ->groupEnd();
             $judulLayar = "Hasil Pencarian: " . $keyword;
         }

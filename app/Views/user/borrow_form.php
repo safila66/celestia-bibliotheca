@@ -165,9 +165,27 @@
     
     <!-- Left: Book Summary -->
     <div class="book-summary">
-      <img src="/assets/covers/<?= esc($book['cover_image'] ?? 'default-cover.jpg') ?>" alt="Cover">
+      <img src="/uploads/covers/<?= esc($book['cover_image'] ?? 'default-cover.jpg') ?>" alt="Cover" onerror="this.src='https://via.placeholder.com/320x480/1a1a2e/C9A84C?text=No+Cover'">
       <h3><?= esc($book['title']) ?></h3>
       <p><?= esc($book['author']) ?></p>
+      
+      <div style="text-align: center; margin-top: 15px; margin-bottom: 20px;">
+        <div style="color: var(--gold); font-size: 18px; letter-spacing: 3px;">
+            <?php
+            $avg = isset($avg_rating) ? round($avg_rating) : 0;
+            for ($i = 1; $i <= 5; $i++) {
+                if ($i <= $avg) {
+                    echo '★';
+                } else {
+                    echo '☆';
+                }
+            }
+            ?>
+        </div>
+        <div style="font-family: 'Raleway', sans-serif; font-size: 11px; color: var(--text-dim); margin-top: 5px;">
+            <?= isset($avg_rating) && $avg_rating > 0 ? number_format($avg_rating, 1) . ' / 5.0' : 'Belum ada rating' ?>
+        </div>
+      </div>
     </div>
 
     <!-- Right: Form -->
