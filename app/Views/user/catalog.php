@@ -145,9 +145,9 @@
                         <?php endif; ?>
                     </div> 
                     
-                    <div class="book-genre"><?= esc($item['category_name'] ?? 'General') ?></div>
-                    <div class="book-title"><?= esc($item['title']) ?></div>
-                    <div class="book-author"><?= esc($item['author'] ?? 'Unknown Scholar') ?></div>
+                    <!-- category removed per user request -->
+                    <div class="book-title" style="color: #F0EBE0; font-family: 'Cinzel', serif; font-size: 15px; text-transform: uppercase; margin-bottom: 4px;"><?= esc($item['title']) ?></div>
+                    <div class="book-author" style="color: var(--gold); font-weight: bold; font-style: normal; font-size: 11px;">Oleh: <?= esc($item['author'] ?? 'Unknown Scholar') ?></div>
                     
                     <div class="book-meta">
                         <span style="color: var(--gold); font-size: 11px; letter-spacing: 2px;">★★★★★</span>
@@ -184,9 +184,9 @@
                             <?php endif; ?>
                         </div> 
                         
-                        <div class="book-genre"><?= esc($item['category_name'] ?? 'General') ?></div>
-                        <div class="book-title"><?= esc($item['title']) ?></div>
-                        <div class="book-author"><?= esc($item['author'] ?? 'Unknown Scholar') ?></div>
+                            <!-- category removed per user request -->
+                            <div class="book-title" style="color: #F0EBE0; font-family: 'Cinzel', serif; font-size: 15px; text-transform: uppercase; margin-bottom: 4px;"><?= esc($item['title']) ?></div>
+                            <div class="book-author" style="color: var(--gold); font-weight: bold; font-style: normal; font-size: 11px;">Oleh: <?= esc($item['author'] ?? 'Unknown Scholar') ?></div>
                         
                         <div class="book-meta">
                             <span style="color: var(--gold); font-size: 11px; letter-spacing: 2px;">★★★★★</span>
